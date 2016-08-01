@@ -1,4 +1,5 @@
 # anitaGSE
+Install:
 ```
 vi unpack/utilityFunctions.h # add #include <cstring>
 declare -x CPPFLAGS=-I$ANITA_FLIGHT_SOFT_DIR/common
@@ -9,4 +10,13 @@ cd wvreader
 vi Makefile
 remove -all static from LDFLAGS
 make
+```
+
+
+Run:
+```
+./gseconf
+./gsecontrol run 5
+#terminate
+./gsecontrol terminate
 ```
