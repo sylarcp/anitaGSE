@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/anitaGround/!svn/ver/2928/anitagse/trunk/tcp
+END
+process_data.pl
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/anitaGround/!svn/ver/628/anitagse/trunk/tcp/process_data.pl
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/anitaGround/!svn/ver/559/anitagse/trunk/tcp/Makefile.in
+END
+receive_data.pl
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/1177/anitagse/trunk/tcp/receive_data.pl
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/anitaGround/!svn/ver/19/anitagse/trunk/tcp/Makefile.am
+END
+rules
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/anitaGround/!svn/ver/2928/anitagse/trunk/tcp/rules
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/anitaGround/!svn/ver/19/anitagse/trunk/tcp/README
+END

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/anitaGround/!svn/ver/457/anitagse/trunk/wvreader
+END
+wvreader.c
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/anitaGround/!svn/ver/457/anitagse/trunk/wvreader/wvreader.c
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/457/anitagse/trunk/wvreader/Makefile.in
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/457/anitagse/trunk/wvreader/Makefile.am
+END

@@ -1,0 +1,70 @@
+
+Configuring Apache 
+-----------------
+
+Apache default configuration is rather paranoid and constricting. 
+You will need to;
+
+* Allow Apache to access and execute CGI scripts in GSE html directory
+* Allow Apache to follow sym links
+
+To do so, you need to add something like following to httpd.conf
+-----
+<Directory /home/*/public_html>
+        Options Indexes ExecCGI FollowSymLinks MultiViews
+        AddHandler cgi-script .cgi .pl
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+</Directory>
+-------
+
+Here I allow use of "http://host/~user" type web spaces (also needs to be 
+uncommented in default httpd.conf). 
+Next, you should have /home/user/public_html path have 755 privelages (or at 
+least 711 above public_html). 
+
+Also, on FC versions of RedHat SElinux security policy is enforced on httpd. 
+This turned out to be a royal pain, and I completely disabled it for httpd 
+through GUI on my desktop menus. Also, there is SUexec protection on apache 
+(another pain if you ask me), and to get rid of it do;
+* locate suexec
+* mv /my/path/suexec /my/path/suexec_disabled
+
+Hopefully, that should do it. Restart apache. To test, put following as
+hello.cgi into /home/user/public_html (and chmod to a+x)
+-----------
+#!/usr/bin/perl
+use strict;
+
+sub timestr {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst)=@_;
+  my $str=sprintf "%4d-%02d-%02d %s %02d:%02d:%02d",($year+1900,$mon+1,$mday,(qw
+(Sun Mon Tue Wed Thu Fri Sat))[$wday],$hour,$min,$sec);
+  return $str;
+}
+
+my $refrate=2;
+my $host=`hostname`;
+my $gmt=timestr(gmtime(time));
+print <<HTML;
+Content-Type: text/html
+Refresh: $refrate
+
+<html>
+<body>
+<center>
+Hello world!<br>
+It's $gmt @ $host<br>
+</center>
+</body>
+</html>
+HTML
+---------------
+
+Point your browser to http://localhost/~user/hello.cgi
+You should see the hello message refreshing every 2 seconds. 
+
+If you get some error, look through access_log and error_log that apache keeps
+(likely in /var/log/httpd) for clues to what went wrong. 
+

@@ -1,0 +1,95 @@
+# Commonly used Perl functions
+# $Header$
+
+my $MAXPTS=500;
+
+sub avgpts{
+  my $scale=shift;
+  my @newpts;
+  for(my $i=0;$i<@_;$i+=$scale){
+    my $sum=0;
+    my $j;
+    for($j=0;$j<$scale && ($i+$j)<@_;++$j){
+      $sum+=$_[$i+$j];
+    }
+    push @newpts,($sum/$j);
+  }
+  return @newpts;
+}
+
+sub makedata {
+  my $sth=shift;
+  my $x=shift;
+  my @yList=@_;
+  my @xpts;
+  my %ypts;
+  foreach my $y (@yList){
+    $ypts{$y}=();
+  }
+  while(my $r = $sth->fetchrow_hashref){
+    push @xpts,$r->{$x};
+    foreach my $y (@yList){
+      push @{$ypts{$y}},$r->{$y};
+    }
+  }
+
+  # Now rescale to lowest $x and convert to minues
+  my $start=$xpts[0];
+  my $min=1e30,$max=-1e30;
+  for(my $i=0;$i<@xpts;++$i){
+    $xpts[$i]-=$start;
+    $xpts[$i]/=60;
+  }
+
+  # Condense if too many points
+  $scale=int(scalar(@xpts)/$MAXPTS)+1;
+  my @data;
+  if($scale==1){
+    push @data,[@xpts];
+    foreach $y (@yList){
+      push @data,[@{$ypts{$y}}];
+    }
+  }else{
+    push @data,[avgpts($scale,@xpts)];
+    foreach $y (@yList){
+      push @data,[avgpts($scale,@{$ypts{$y}})];
+    }
+  }
+  return (\@data,$start);
+}
+
+sub timestr {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst)=@_;
+  my $str=sprintf "%4d-%02d-%02d %s %02d:%02d:%02d",($year+1900,$mon+1,$mday,(qw(Sun Mon Tue Wed Thu Fri Sat))[$wday],$hour,$min,$sec);
+  return $str;
+}
+
+sub gettime {
+  my ($date,$t)=split / /,$_[0];
+  my ($yr,$mon,$day)=split /-/,$date;
+  my ($hr,$min,$sec)=split /:/,$t;
+  my $gmsec=timegm($sec,$min,$hr,$day,$mon-1,$yr-1900) or print "ERROR\n";
+  return $gmsec;
+}
+
+sub gpstimestr {
+  my $ms=shift;
+  my $hr=int($ms/3600000);
+  my $min=int(($ms-$hr*3600000)/60000);
+  my $sec=int(($ms-$hr*3600000-$min*60000)/1000);
+  my $ms=$ms-$hr*3600000-$min*60000-$sec*1000;
+  return sprintf "%02d:%02d:%02d.%03d",($hr,$min,$sec,$ms);
+}
+
+sub getsatinfo {
+  my $satstr=shift;
+  my @strs=split /},{/,substr $satstr,2,-2;
+  my @info;
+  foreach $s (@strs){
+    push @info,[split /,/,$s];
+  }
+  return @info;
+}
+
+# Return positive value
+1;

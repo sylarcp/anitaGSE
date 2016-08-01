@@ -1,0 +1,16 @@
+This directory contains scripts needed to receive Anita data stream, fan it 
+out as necessary, unpack and create links for processing by GSE software. 
+ 
+Before running anything, run ./gseconf in to GSE directory (after editing
+it!). That will create 'receive.sh' script in this directory. 
+Perl script receive_data.pl is called by receive.sh to store data received 
+through TCP and to fan it out as needed. The list of files received will 
+be piped to a filehandle as specified by configure. Perl script 
+process_data.pl reads the filenames from the filehandle and makes links to 
+those files for use by subsequent GSE daemons. 
+
+You shouldn't need to control these scripts directly. Everything should be 
+done by 'gsecontrol' script in the top directory. See top directory README.
+
+
+-- Ped (predrag@phys.hawaii.edu)

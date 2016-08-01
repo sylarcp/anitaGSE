@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+  </head>
+
+  <body>
+    <h3>Select variable and time period</h3>
+    <p>
+    <form action="varcheck.cgi" method="POST">
+      <table border=1>
+	  <tr>
+	    <td valign="top" colspan=5>
+	      <b>Variable:</b>
+	    </td>
+	    <td valign="top">
+	      <b>Time:</b>
+	    </td>
+	  </tr>
+	  <tr>
+	    <td valign="top">
+	      <input TYPE="checkbox" NAME="gpsd_pat:latitude:latitude [deg]:.2f"> Latitude<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:longitude:longitude [deg]:.2f"> Longitude<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:altitude:altitude [deg]:.1f"> Altitude<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:heading:heading [deg]:.2f"> Heading<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:pitch:pitch [deg]:.2f"> Pitch<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:roll:roll [deg]:.2f"> Roll<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:mrms:Mrms [m]:.2f"> Mrms<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:brms:Brms [m]:.2f"> Brms<br>
+	      <input TYPE="checkbox" NAME="gpsd_pat:flag:GPS flag:d"> attFlag<br>
+	      <input TYPE="checkbox" NAME="gpsd_sat:numsats:Nsat:d"> # satellites<br>
+	      <input TYPE="checkbox" NAME="hd:evnum:Event #:d"> Event #<br>
+	      <input TYPE="checkbox" NAME="hd:calib:Calib flag:d"> Calib Flag<br>
+	      <input TYPE="checkbox" NAME="hd:priority:Priority:d"> Priority<br>
+	      <input TYPE="checkbox" NAME="hd:trigtype:TrigType:d"> TrigType<br>
+	      <input TYPE="checkbox" NAME="hd:trignum:Trig #:d"> Trig #<br>
+	      <input TYPE="checkbox" NAME="hd:ppsnum:PPS:d"> PPS #<br>
+	      <input TYPE="checkbox" NAME="hd:c3ponum:c3po:d"> c3po #<br>
+	      <input TYPE="checkbox" NAME="hd:otherbits:other:d"> Other #<br>
+	    </td>
+	    <td valign="top">
+	      <input TYPE="checkbox" NAME="hkd:acc1x:ACC1 X [g]:.3f"> ACC1X<br>
+	      <input TYPE="checkbox" NAME="hkd:acc1y:ACC1 Y [g]:.3f"> ACC1Y<br>
+	      <input TYPE="checkbox" NAME="hkd:acc1z:ACC1 Z [g]:.3f"> ACC1Z<br>
+	      <input TYPE="checkbox" NAME="hkd:acc2x:ACC2 X [g]:.3f""> ACC2X<br>
+	      <input TYPE="checkbox" NAME="hkd:acc2y:ACC2 Y [g]:.3f""> ACC2Y<br>
+	      <input TYPE="checkbox" NAME="hkd:acc2z:ACC2 Z [g]:.3f""> ACC2Z<br>
+	      <input TYPE="checkbox" NAME="hkd:ssx:SS X:.3f"> SS X<br>
+	      <input TYPE="checkbox" NAME="hkd:ssy:SS Y:.3f"> SS Y<br>
+	      <input TYPE="checkbox" NAME="hkd:magx:Mag X [G]:.3f"> MAG X<br>
+	      <input TYPE="checkbox" NAME="hkd:magy:Mag Y [G]:.3f"> MAG Y<br>
+	      <input TYPE="checkbox" NAME="hkd:magz:Mag Z [G]:.3f"> MAG Z<br>
+	      <input TYPE="checkbox" NAME="hkd:acc1t:ACC1 T [C]:.1f"> ACC1T<br>
+	      <input TYPE="checkbox" NAME="hkd:acc2t:ACC2 T [C]:.1f"> ACC2T<br>
+	      <input TYPE="checkbox" NAME="hkd:sst:SS T [C]:.1f"> SS T<br>
+	      <input TYPE="checkbox" NAME="hkd:pressh:Press High [PSI]:.2f"> PRESS HIGH<br>
+	      <input TYPE="checkbox" NAME="hkd:pressl:Press Low [Torr]:.2f"> PRESS LOW<br>
+	      <input TYPE="checkbox" NAME="hkd:sbst1:SBS T1 [C]:.1f"> SBS T1<br>
+	      <input TYPE="checkbox" NAME="hkd:sbst2:SBS T2 [C]:.1f"> SBS T2<br>
+	      <input TYPE="checkbox" NAME="hkd_v:bd1[7]:SS X1:.3f"> SS X1 V<br>
+	      <input TYPE="checkbox" NAME="hkd_v:bd1[27]:SS X2:.3f"> SS X2 V<br>
+	      <input TYPE="checkbox" NAME="hkd_v:bd1[26]:SS Y1:.3f"> SS Y1 V<br>
+	      <input TYPE="checkbox" NAME="hkd_v:bd1[32]:SS Y2:.3f"> SS Y2 V<br>
+	    </td>
+	    <td valign="top">
+	      <input TYPE="checkbox" NAME="hkd:p1_5v:+1.5V [V]:.2f"> +1.5V<br>
+	      <input TYPE="checkbox" NAME="hkd:p2_5v:+2.5V [V]:.2f"> +2.5V<br>
+	      <input TYPE="checkbox" NAME="hkd:p3_3v:+3.3V [V]:.2f"> +3.3V<br>
+	      <input TYPE="checkbox" NAME="hkd:p5v:+5V [V]:.2f"> +5V<br>
+	      <input TYPE="checkbox" NAME="hkd:p12v:+12V [V]:.2f"> +12V<br>
+	      <input TYPE="checkbox" NAME="hkd:p12ipv:+12IP V [V]:.2f"> +12IPV<br>
+	      <input TYPE="checkbox" NAME="hkd:batv:BAT V [V]:.2f"> BATV<br>
+	      <input TYPE="checkbox" NAME="hkd:ppvv:PV V [V]:.2f"> PV V<br>
+	      <input TYPE="checkbox" NAME="hkd:n5v:-5V [V]:.2f"> -5V<br>
+	      <input TYPE="checkbox" NAME="hkd:n12v:-12V [V]:.2f"> -12V<br>
+	      <input TYPE="checkbox" NAME="hkd:gpsv:GPS V [V]:.2f"> GPSV<br>
+	      <input TYPE="checkbox" NAME="hkd:rfcmv:RFCM V [V]:.2f"> RFCMV<br>
+	      <input TYPE="checkbox" NAME="hkd:p1_5i:+1.5 I [A]:.3f"> +1.5I<br>
+	      <input TYPE="checkbox" NAME="hkd:p2_5i:+2.5 I [A]:.3f"> +2.5I<br>
+	      <input TYPE="checkbox" NAME="hkd:p3_3i:+3.3 I [A]:.3f"> +3.3I<br>
+	      <input TYPE="checkbox" NAME="hkd:p5i:+5 I [A]:.3f"> +5I<br>
+	      <input TYPE="checkbox" NAME="hkd:p12i:+12 I [A]:.3f"> +12I<br>
+	      <input TYPE="checkbox" NAME="hkd:p12ipi:+12IP I [A]:.3f"> +12IPI<br>
+	      <input TYPE="checkbox" NAME="hkd:p24i:+24 I [A]:.3f"> +24I<br>
+	      <input TYPE="checkbox" NAME="hkd:ppvi:+PV I [A]:.3f"> PV I<br>
+	      <input TYPE="checkbox" NAME="hkd:n5i:-5 I [A]:.3f"> -5I<br>
+	      <input TYPE="checkbox" NAME="hkd:n12i:-12 I [A]:.3f"> -12I<br>
+	      <input TYPE="checkbox" NAME="hkd:bati:BAT I [A]:.3f"> BATI<br>
+	    </td>
+	    <td valign="top">
+	      <input TYPE="checkbox" NAME="hkd:t18:IT01 [C]:.1f"> IT01 IP Box<br>
+	      <input TYPE="checkbox" NAME="hkd:t5:IT02 [C]:.1f">  IT02 DC/DC Box<br>
+	      <input TYPE="checkbox" NAME="hkd:t1:IT03 [C]:.1f">  IT03 SURF 1-1 Lab<br>
+	      <input TYPE="checkbox" NAME="hkd:t2:IT04 [C]:.1f">  IT04 SURF 1-3 Lab<br>
+	      <input TYPE="checkbox" NAME="hkd:t7:IT05 [C]:.1f">  IT05 SHORT_MINI_01 Box<br>
+	      <input TYPE="checkbox" NAME="hkd:t6:IT06 [C]:.1f">  IT06 Top SURF 1-3 Faceplt<br>
+	      <input TYPE="checkbox" NAME="hkd:t14:IT07 [C]:.1f"> IT07 Avtech<br>
+	      <input TYPE="checkbox" NAME="hkd:t4:IT08 [C]:.1f">  IT08 TURF Bckplt<br>
+	      <input TYPE="checkbox" NAME="hkd:t3:IT09 [C]:.1f">  IT09 cPCI Crate top<br>
+	      <input TYPE="checkbox" NAME="hkd:t12:IT10 [C]:.1f"> IT10 ADU5<br>
+	      <input TYPE="checkbox" NAME="hkd:t16:IT11 [C]:.1f"> IT11 G12<br>
+	      <input TYPE="checkbox" NAME="hkd:t11:IT12 [C]:.1f"> IT12 Side of hk box<br>
+	      <input TYPE="checkbox" NAME="hkd:t13:IT13 [C]:.1f"> IT13 RS232/422 Conv<br>
+	      <input TYPE="checkbox" NAME="hkd:t20:IT14 [C]:.1f"> IT14 Rad. Plt<br>
+	      <input TYPE="checkbox" NAME="hkd:t8:IT15 [C]:.1f">  IT15 Baseplt<br>
+	      <input TYPE="checkbox" NAME="hkd:t10:IT16 [C]:.1f"> IT16 RFCM Pwr Blkhd<br>
+	      <input TYPE="checkbox" NAME="hkd:t19:IT17 [C]:.1f"> IT17 Top Panel<br>
+	      <input TYPE="checkbox" NAME="hkd:t17:IT18 [C]:.1f"> IT18 Free Air<br>
+	      <input TYPE="checkbox" NAME="hkd:t9:IT19 [C]:.1f">  IT19 GPS Conditioner<br>
+	      <input TYPE="checkbox" NAME="hkd:t15:IT20 [C]:.1f"> IT20 Pnl w/NSBF Comm <br>
+	      <input TYPE="checkbox" NAME="hkd:t21:IT21 [C]:.1f"> IT Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t22:IT22 [C]:.1f"> IT Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t23:IT23 [C]:.1f"> IT Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t24:IT24 [C]:.1f"> IT Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t25:IT25 [C]:.1f"> IT Spare<br>
+	    </td>
+	    <td valign="top">
+	      <input TYPE="checkbox" NAME="hkd:t33:ET01 [C]:.1f"> ET01 Battery box<br>
+	      <input TYPE="checkbox" NAME="hkd:t46:ET02 [C]:.1f"> ET02 RFCM 1<br>
+	      <input TYPE="checkbox" NAME="hkd:t29:ET03 [C]:.1f"> ET03 RFCM 2<br>
+	      <input TYPE="checkbox" NAME="hkd:t31:ET04 [C]:.1f"> ET04 Magnetometer<br>
+	      <input TYPE="checkbox" NAME="hkd:t30:ET05 [C]:.1f"> ET05 SSHD<br>
+	      <input TYPE="checkbox" NAME="hkd:t32:ET06 [C]:.1f"> ET06 CldPlt Int<br>
+	      <input TYPE="checkbox" NAME="hkd:t37:ET07 [C]:.1f"> ET07 Upp.ring #1<br>
+	      <input TYPE="checkbox" NAME="hkd:t47:ET08 [C]:.1f"> ET08 Upp.ring #2<br>
+	      <input TYPE="checkbox" NAME="hkd:t48:ET09 [C]:.1f"> ET09 Upp.ring #3<br>
+	      <input TYPE="checkbox" NAME="hkd:t39:ET10 [C]:.1f"> ET10 Upp.ring #4<br>
+	      <input TYPE="checkbox" NAME="hkd:t40:ET11 [C]:.1f"> ET11 Plt1 Tr6<br>
+	      <input TYPE="checkbox" NAME="hkd:t50:ET12 [C]:.1f"> ET12 Mdl.ring #2<br>
+	      <input TYPE="checkbox" NAME="hkd:t49:ET13 [C]:.1f"> ET13 Mdl.ring #3<br>
+	      <input TYPE="checkbox" NAME="hkd:t38:ET14 [C]:.1f"> ET14 Mdl.ring #4<br>
+	      <input TYPE="checkbox" NAME="hkd:t27:ET16 [C]:.1f"> ET16 Plt3 Tr6<br>
+	      <input TYPE="checkbox" NAME="hkd:t36:ET15 [C]:.1f"> ET15 Plt1 Tr6<br>
+	      <input TYPE="checkbox" NAME="hkd:t34:ET17 [C]:.1f"> ET17 Plt5 Tr6<br>
+	      <input TYPE="checkbox" NAME="hkd:t35:ET18 [C]:.1f"> ET18 Plt7 Tr6<br>
+	      <input TYPE="checkbox" NAME="hkd:t26:ET19 [C]:.1f"> ET19 Free Air<br>
+	      <input TYPE="checkbox" NAME="hkd:t28:ET20 [C]:.1f"> ET20 CldPlt Ext<br>
+	      <input TYPE="checkbox" NAME="hkd:t41:ET21 [C]:.1f"> ET Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t42:ET22 [C]:.1f"> ET Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t43:ET23 [C]:.1f"> ET Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t44:ET24 [C]:.1f"> ET Spare<br>
+	      <input TYPE="checkbox" NAME="hkd:t45:ET25 [C]:.1f"> ET Spare<br>
+	    </td>
+	    <td valign="top">
+	      <input TYPE="radio" NAME="time" VALUE="600" CHECKED> last 10 min<br>
+	      <input TYPE="radio" NAME="time" VALUE="1800"> last 30 min<br>
+	      <input TYPE="radio" NAME="time" VALUE="3600"> last 60 min<br>
+	      <input TYPE="radio" NAME="time" VALUE="21600"> last 6 hr<br>
+	      <input TYPE="radio" NAME="time" VALUE="86400"> last day<br>
+	      <input TYPE="radio" NAME="time" VALUE="-1"> full<br>
+	      <input TYPE="radio" NAME="time" VALUE="-2"> last 
+	      <input TYPE="text" SIZE=10 NAME="last"> sec<br>
+	      <input TYPE="radio" NAME="time" VALUE="-3"> other time span<br>
+	      Start time: <input TYPE="text" NAME="start"><br>
+	      <font size=-2>YYYY-MM-DD HH:MM:SS</font><br>
+	      End time: <input TYPE="text" NAME="end"><br>
+	      <font size=-2>YYYY-MM-DD HH:MM:SS</font><br>
+	      <input type="submit" value="Submit">
+	      <input type="reset" value="Clear"><br>
+	    </td>
+	  </tr>
+      </table>
+    </form>
+
+  </body>
+</html>
+

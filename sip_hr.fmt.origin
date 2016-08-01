@@ -1,0 +1,33 @@
+# The los_lddl_extract program uses this LDDL format file to write the
+# nbytes of data to stdout.
+#
+# data format 2006a
+# Marty Olevitch, Feb '06
+#  For openport and sip_hr  data.  Peng Dec 2014
+
+endian offset 0 type S = 0xf00d
+sig los offset 0 type S = 0xf00d
+
+group header
+	S = 0xf00d
+	S = 0xd0cc
+	S = 0xae00 mask 0xff00 : print "ID_HDR %04x\t"
+	L -> bufcnt : print "buf %lu\t"	# buffer count
+	S -> nbytes : print "nb %u\t"	# no. science bytes
+group_end
+
+group ender
+	S : print "chk %04x "
+	S = 0xaeff
+	S = 0xc0fe
+	S = 0xf1ea
+group_end
+
+group anita_data
+    B nbytes		# science data
+group_end
+
+evt los
+    header
+    anita_data
+    ender

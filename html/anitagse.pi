@@ -1,0 +1,28 @@
+# Commonly used Perl functions
+# $Header$
+
+sub timestr {
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst)=@_;
+  my $str=sprintf "%4d-%02d-%02d %s %02d:%02d:%02d",($year+1900,$mon+1,$mday,(qw(Sun Mon Tue Wed Thu Fri Sat))[$wday],$hour,$min,$sec);
+  return $str;
+}
+
+sub gettime {
+  my ($date,$t)=split / /,$_[0];
+  my ($yr,$mon,$day)=split /-/,$date;
+  my ($hr,$min,$sec)=split /:/,$t;
+  my $gmsec=timegm($sec,$min,$hr,$day,$mon-1,$yr-1900) or print "ERROR\n";
+  return $gmsec;
+}
+
+sub gpstimestr {
+  my $ms=shift;
+  my $hr=int($ms/3600000);
+  my $min=int(($ms-$hr*3600000)/60000);
+  my $sec=int(($ms-$hr*3600000-$min*60000)/1000);
+  my $ms=$ms-$hr*3600000-$min*60000-$sec*1000;
+  return sprintf "%02d:%02d:%02d.%03d",($hr,$min,$sec,$ms);
+}
+
+# Return positive value
+1;

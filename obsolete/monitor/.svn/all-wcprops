@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/anitaGround/!svn/ver/364/anitagse/trunk/obsolete/monitor
+END
+shmem.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/shmem.h
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/Makefile.in
+END
+datmon.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/datmon.c
+END
+sem.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/sem.c
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/Makefile.am
+END
+sem.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/sem.h
+END
+shmem.c
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/shmem.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/Makefile
+END
+shmem_def.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/anitaGround/!svn/ver/363/anitagse/trunk/obsolete/monitor/shmem_def.h
+END

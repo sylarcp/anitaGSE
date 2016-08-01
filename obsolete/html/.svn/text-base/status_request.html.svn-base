@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+  </head>
+
+  <body>
+    <h3>Enter GMT time</h3>
+    Use format YYYY-MM-DD HH:MM:SS<br>
+    <p>
+    <form action="status.cgi" method="POST">
+      GMT time <input name="time" type="text"><br>
+      <input type="submit" value="Submit">
+      <input type="reset" value="Clear"><br>
+    </form>
+  </body>
+</html>

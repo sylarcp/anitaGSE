@@ -1,0 +1,130 @@
+psql:create_tables.sql:27: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "hk_cal_pkey" for table "hk_cal"
+psql:create_tables.sql:27: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "hk_cal_time_key" for table "hk_cal"
+CREATE TABLE
+psql:create_tables.sql:97: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "hk_pkey" for table "hk"
+psql:create_tables.sql:97: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "hk_time_key" for table "hk"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:112: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "sshk_cal_pkey" for table "sshk_cal"
+psql:create_tables.sql:112: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "sshk_cal_time_key" for table "sshk_cal"
+CREATE TABLE
+psql:create_tables.sql:136: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "sshk_pkey" for table "sshk"
+psql:create_tables.sql:136: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "sshk_time_key" for table "sshk"
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE RULE
+CREATE TRIGGER
+CREATE RULE
+psql:create_tables.sql:651: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "hk_surf_pkey" for table "hk_surf"
+psql:create_tables.sql:651: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "hk_surf_time_key" for table "hk_surf"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:670: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "turf_pkey" for table "turf"
+psql:create_tables.sql:670: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "turf_time_key" for table "turf"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:693: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "mon_pkey" for table "mon"
+psql:create_tables.sql:693: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "mon_time_key" for table "mon"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:716: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "adu5_pat_pkey" for table "adu5_pat"
+psql:create_tables.sql:716: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "adu5_pat_time_key" for table "adu5_pat"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:733: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "adu5_vtg_pkey" for table "adu5_vtg"
+psql:create_tables.sql:733: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "adu5_vtg_time_key" for table "adu5_vtg"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:751: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "adu5_sat_pkey" for table "adu5_sat"
+psql:create_tables.sql:751: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "adu5_sat_time_key" for table "adu5_sat"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:775: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "g12_pos_pkey" for table "g12_pos"
+psql:create_tables.sql:775: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "g12_pos_time_key" for table "g12_pos"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:790: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "g12_sat_pkey" for table "g12_sat"
+psql:create_tables.sql:790: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "g12_sat_time_key" for table "g12_sat"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:802: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "cmd_pkey" for table "cmd"
+psql:create_tables.sql:802: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "cmd_time_key" for table "cmd"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:811: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "wakeup_pkey" for table "wakeup"
+CREATE TABLE
+psql:create_tables.sql:823: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "file_pkey" for table "file"
+psql:create_tables.sql:823: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "file_time_key" for table "file"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:854: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "slow_time_key" for table "slow"
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+psql:create_tables.sql:960: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "hd_pkey" for table "hd"
+psql:create_tables.sql:960: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "hd_evnum_key" for table "hd"
+psql:create_tables.sql:960: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "hd_time_key" for table "hd"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:980: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "wv_evnum_key" for table "wv"
+CREATE TABLE
+CREATE VIEW
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+psql:create_tables.sql:1313: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "run_pkey" for table "run"
+psql:create_tables.sql:1313: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "run_time_key" for table "run"
+CREATE TABLE
+CREATE INDEX
+psql:create_tables.sql:1333: NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "other_pkey" for table "other"
+psql:create_tables.sql:1333: NOTICE:  CREATE TABLE / UNIQUE will create implicit index "other_time_key" for table "other"
+CREATE TABLE
+CREATE INDEX
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+CREATE RULE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT

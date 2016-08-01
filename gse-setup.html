@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>ANITA GSE software and data distribution</title></head><body>
+<h1>ANITA flight data distribution and processing system</h1>
+Predrag Miocinovic<br>
+<span style="font-style: italic;">High Energy Physics Group</span><br style="font-style: italic;">
+<span style="font-style: italic;">Department of Physics and Astronomy</span><br style="font-style: italic;">
+<span style="font-style: italic;">University of Hawaii at Manoa</span><br>
+<a href="mailto:predrag@phys.hawaii.edu">predrag@phys.hawaii.edu</a><br>
+
+Some modifications by Shige Matsuno<br>
+<a href="mailto:shige@phys.hawaii.edu">shige@phys.hawaii.edu</a><br>
+
+<br>
+<!-- hhmts start -->
+Last modified: Fri 1st Aug. 2008
+<!-- hhmts end -->
+<br>
+<hr style="width: 100%; height: 2px;">
+<h2>Content:</h2>
+<ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#xfer">Data transfer system</a></li>
+  <li><a href="#hw">Recommended hardware</a></li>    
+  <li><a href="#setup">Setting up to receive the data</a></li>
+  <li><a href="#running">Running GSE software</a></li>
+  <li><a href="#monitor">Monitoring GSE performance</a></li>
+  <li><a href="#maintain">Maintaining PostgreSQL database</a><br>
+  </li><li><a href="#restart">Starting new database</a><br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;">
+<h2><a name="intro"></a>Introduction</h2>
+This document describes how ANITA flight data is received from GSE
+computer, distributed among ANITA institutions, and how it is
+pre-processed and stored for subsequent usage. Links to all relevant
+software are at the end. <br>
+<h2><a name="xfer"></a>Data transfer system</h2>
+Upon reception of data from primary GSE computer, i.e. LOS or TDRSS
+data acquisition computer, ANITA
+GSE server will distribute data to any secondary servers. The data will
+be resent in the
+identical format as received from primary GSE computer, using the
+same protocol and port. In a case of any unforeseen communication
+problems, a different machine will be
+designated as ANITA data fanout node. <br>
+Each machine receiving ANITA data has option of processing data up to a
+given level:<br>
+<ol>
+  <li>passively storing binary data</li>
+  <li>fanning out and unpacking binary data</li>
+  <li>processing binary data and storing into database</li>
+  <li>processing binary data and storing into files</li>
+  <li>processing binary data and storing into database and files</li>
+</ol>
+Once the data is stored in the database, it can be viewed by graphical
+interface or through web interface.<br>
+
+<h2><a name="hw"></a>Recommended hardware</h2>
+I've found that I got best performance results on my desktop in following configuration;
+<ul>
+  <li>Running Fedora Core 3 (kernel 2.6.12)</li>
+  <li>2.8 GHz Pentium IV with 2 GB of memory  </li>
+  <li>2 SATA disk drives, one exclusively used for database data (&gt;100GB size to be safe)</li>
+</ul>
+This doesn't mean that other flavors of linux are worse, just that I
+had more problems getting satisfactory performance from our RHEL3
+servers running 2.4.x. I think the most critical thing is that database
+gets one disk to itself, so that only disk I/O is associated with the
+database. Also, I think having database on a RAID disk would slow it
+down, but I only have circumstancial proof. The best way to establish
+suitability of the system is with some testing. <h2><a name="setup"></a>Setting up to receive the data</h2>
+It's recommended that you use Linux system. If you must use some other
+OS, please contact me to work out the details. To receive the data you
+need to install ANITA GSE package. For full functionality, you
+need to install all packages listed below. Before you start, I would
+recommend that you create user <span style="font-family: monospace;">anita</span>
+on your system which will actually run all data reception and
+processing. If you are behind a firewall, make sure that there is an
+opening for port 7740 connections from all IPs that you expect to
+receive data from. Contact me for IP
+information.http://www-group.slac.stanford.edu/sluo/<br>
+<!-- Instruction for HTML server not needed at the moment
+<h4>Installing Perl<br>
+</h4>
+<ol>
+  <li>Install any recent version of Perl if not already on your system</li>
+  <li>Make sure <span style="font-family: monospace;">/usr/bin/perl</span>
+points to a perl executable</li>
+  <li>Make sure <span style="font-family: monospace;">/bin/bash</span>
+points to bash shell executable (it should on any sane system)<br>
+  </li>
+</ol>
+<h4>Installing Perl modules<br>
+</h4>
+<ol>
+  <li>Download <a
+ href="http://search.cpan.org/CPAN/authors/id/L/LD/LDS/GD-2.28.tar.gz">GD</a>,
+(or for if you have older system, try <a
+ href="http://search.cpan.org/CPAN/authors/id/L/LD/LDS/GD-1.41.tar.gz">GD-1.41</a>),
+    <a
+ href="http://search.cpan.org/CPAN/authors/id/M/MV/MVERB/GDTextUtil-0.86.tar.gz">GD::Text</a>,
+    <a
+ href="http://search.cpan.org/CPAN/authors/id/M/MV/MVERB/GDGraph-1.43.tar.gz">GD::Graph</a>
+and <a
+ href="http://search.cpan.org/CPAN/authors/id/D/DB/DBDPG/DBD-Pg-1.43.tar.gz">DBD::Pg</a>
+(or for older systems <a
+ href="http://search.cpan.org/CPAN/authors/id/D/DW/DWHEELER/DBD-Pg-1.22.tar.gz">DBD::Pg</a>)
+Perl modules <br>
+  </li>
+  <li>Unpack by running<span style="">, while substituting XXX for
+relevant module<br>
+    <pre>tar xzf XXX.tar.gz<br>cd XXX</pre>
+    </span></li>
+  <li><span style="">Compile and install by running (last step as root)<br>
+    </span>
+    <pre>perl Makefile.PL<br>make<br>make test<br>make install<br></pre>
+  </li>
+</ol>
+GD modules rely on libgd library and header files being installed on
+your system. If they are not, you can find them <a
+ href="http://www.boutell.com/gd/">here</a> or at your favorite RPM
+repository.
+<span style="font-family: monospace;"></span><br>
+-->
+<h4>Installing PostgreSQL</h4>
+Note: You can receive telemetry data without having to store it into a database, so you may skip this step in such case.
+<ol>
+  <li>Install <a href="http://www.postgresql.org/">PostgreSQL</a>
+database (suggested version is 7.4.8, later versions of 7.4.x work, as well as the 
+latest 8.1.4 which supposedly has better multiprocessor performance) from your favorite rpm site or <a href="ftp://ftp.postgresql.org/pub/binary/">here</a> (look into OLD/ subdirectory).
+Newer Linux distributions will have 7.4.8 RPMs or later available; you will need
+client, server, devel, and libs RPMs. </br> (A recent version 8.3 is much
+faster and more stable than 8.1. Please try to use it. [added Aug-08]) </li>
+  <li>Move
+PostgreSQL top data directory to a disk separate from the rest of your
+operating syetem if you have one. In RedHat distributions this is <span style="font-family: monospace;">/var/lib/pgsql</span>, for others check your 
+configuration. Either make a link from the old to the new location, or change relevant variables in POstgreSQL startup 
+script. This is usually <span style="font-family: monospace;">/etc/init.d/postgres</span>, but could be different
+on your system.
+  </li><li>Start PostgreSQL server (either by <span style="font-family: monospace;">/etc/init.d/postgres start</span> or
+by following instructions in the source distribution) </li>
+  <li>Create <span style="font-family: monospace;">anita</span> and <span style="font-family: monospace;">gui</span> db users<br>
+    <pre>su postgres<br>createuser anita<br>createuser gui<br></pre>
+  </li>
+  <li> Next, you need to allow TCP/IP connections for<span style="font-family: monospace;"></span> <span style="font-family: monospace;">gui</span> user to database. Edit file
+    <span style="font-family: monospace;">pg_hba.conf</span> found in
+PostgreSQL configuration directory (usually <span style="font-family: monospace;">/var/lib/pgsql/data</span> or <span style="font-family: monospace;">/etc/postgresql/&lt;version #&gt;/main</span> for Debian), and add line
+    <pre>host    all          gui        255.255.255.255    0.0.0.0           md5</pre>
+  </li>
+  <li> Edit <span style="font-family: monospace;">postgresql.conf</span>
+found in the same directory and set
+    <pre>tcpip_socket = true<br>port = 5432</pre>
+These options are commented out by default.<br>
+       On version 8 PostgreSQL server your will need instead to set
+	<pre>listen_addresses = '*'<br>port = 5432</pre>
+  </li>
+  <li>Restart PostgreSQL server (either by <span style="font-family: monospace;">/etc/init.d/postgres restart</span> or
+by following instructions in the source distribution) </li>
+  <li>Still as user <span style="font-family: monospace;">postgres</span>,
+open
+any database, and set password for <span style="font-family: monospace;">anita</span> user
+    <pre>[tcsh]$ psql template1<br>template1=# UPDATE pg_shadow SET passwd='XXXX' WHERE usename='gui';<br>template1=# \q</pre>
+      On version 8 PostgreSQL server you will instead need to execute
+    <pre>[tcsh]$ psql template1<br>template1=# ALTER ROLE gui WITH PASSWORD 'XXXX';<br>template1=# ALTER ROLE anita createdb;</br>template1=# \q</pre>	
+Contact me for XXXX. </li>
+  <li> Create language  [added Aug-08]
+    <pre>[tcsh]$ createlang plpgsql template1 </pre></li>
+</ol>
+<b>NB:</b> If you are running SElinux on your system (default on RedHat
+Fedora), disable it for postgresql and httpd services.
+<h4>Installing lddl</h4>
+<ol>
+  <li>Before you start, make sure you have <span style="font-family: monospace;">yacc</span> and <span style="font-family: monospace;">lex</span> installed on your system.
+They usually come as parts of <span style="font-family: monospace;">byacc</span>
+and <span style="font-family: monospace;">flex</span> distributions,
+i.e. go to your favorite RPM site. <br>
+  </li>
+  <li>Download <a href="http://www.phys.hawaii.edu/%7Epredrag/post/anita/software/lddl-1.8b.tar.bz2">lddl</a>
+distribution version 1.8b(!) (<a href="http://cosray.wustl.edu/%7Emarty/lddl/doc-1.8a.html">documentation</a>)</li>
+  <li>Unpack by running<br>
+    <pre>tar xjf lddl-1.8b.tar.bz2<br>cd lddl-1.8b</pre>
+  </li>
+  <li>Compile and install<br>
+    <pre>./configure<br>make<br>make install</pre>
+  </li>
+  <li>Check that you have executable <span style="font-family: monospace;">dataprint</span> in <span style="font-family: monospace;">/usr/local/bin</span>. Make sure <span style="font-family: monospace;">/usr/local/bin</span> is in your
+execution path of user <span style="font-family: monospace;">anita.</span></li>
+</ol>
+<h4>Installing ucspi-tcp</h4>
+<ol>
+  <li>Download <a href="http://cr.yp.to/ucspi-tcp/ucspi-tcp-0.88.tar.gz">ucspi-tcp</a>
+distribution (<a href="http://cr.yp.to/ucspi-tcp.html">documentation</a>).
+If you have RH9 or other glibc 2.3.1 system, download <a href="http://www.phys.hawaii.edu/%7Epredrag/anita/software/ucspi-tcp-0.88-rh9.tar.gz">patched</a>
+distribution.<br>
+  </li>
+  <li>Unpack by running<br>
+    <pre>tar xzf ucsp-tcp-0.88.tar.gz (or tar xzf ucsp-tcp-0.88-rh9.tar.gz)<br>cd ucsp-tcp-0.88 (or cd ucsp-tcp-0.88-rh9)</pre>
+  </li>
+  <li>Compile and install<br>
+    <pre>make<br>make setup check</pre>
+    <pre>(if you get "errno" problems, put "#include &lt;errno.h&gt;" in error.h)</pre>
+
+  </li>
+  <li>Check that you have executables <span style="font-family: monospace;">tcpserver</span> and <span style="font-family: monospace;">tcpclient</span> in <span style="font-family: monospace;">/usr/local/bin</span>. Make sure <span style="font-family: monospace;">/usr/local/bin</span> is in your
+execution path of user <span style="font-family: monospace;">anita.</span></li>
+</ol>
+<h4>Installing daemontools</h4>
+<ol>
+  <li>Download <a href="http://cr.yp.to/daemontools/daemontools-0.76.tar.gz">daemontools</a>
+distribution (<a href="http://cr.yp.to/daemontools.html">documentation</a>).&nbsp;
+If you have RH9 or other glibc 2.3.1 system, download <a href="http://www.phys.hawaii.edu/%7Epredrag/anita/software/daemontools-0.76-rh9.tar.gz">patched</a>
+distribution.</li>
+  <li>Unpack by running<br>
+    <pre>tar xzf daemontools-0.76.tar.gz (or daemontools-0.76-rh9.tar.gz)<br>cd admin/daemontools-0.76</pre>
+  </li>
+  <li>Compile (I don't recommend installing since it is somewhat
+unorthodox)<br>
+    <pre>package/compile</pre>
+  </li>
+  <li>Check that you have <span style="font-family: monospace;">supervise, svscan,</span>
+and <span style="font-family: monospace;">multilog</span> executables in <span style="font-family: monospace;">command/</span>
+subdirectory. If you wish, you could copy all executables from <span style="font-family: monospace;">command/</span>
+to your <span style="font-family: monospace;">/usr/local/bin</span>.</li>
+</ol>
+
+<h4>Installing and configuring Apache</h4>
+If you wish to allow web monitoring of GSE server performance you need to run Apache web-server<br>
+<ol>
+  <li>Install any recent version of Apache web server</li>
+  <li>Configure Apache to allow it to execute scripts from user web
+space (consult your local httpd guru or follow these <a href="http://www.phys.hawaii.edu/%7Epredrag/post/anita/gse_programs/apache-setup.txt">instructions</a>)<br>
+  </li>
+</ol>
+
+<h4>Installing ANITA Flight Software common libraries</h4>
+Flight software common libraries are required for decoding of waveforms. You can download and 
+install full flightSoft distribution (contact Ryan Nichol for instructions) or you can install
+just common libraries. 
+<ol>
+  <li> Download <a href="http://www.phys.hawaii.edu/%7Epredrag/anita/software/flightSoft_common.tgz">flightSoft
+common</a> tarball. 
+  </li><li> Unpack by running<br>
+    <pre>tar xzf flightSoft_common.tgz<br>cd flightSoft</pre>
+  </li>
+  <li> Compile (if you use tcsh shell use <span style="font-family: monospace;">setenv</span> instead of <span style="font-family: monospace;">declare</span>)
+    <pre>declare -x ANITA_FLIGHT_SOFT_DIR=$PWD<br>cd common<br>make</pre>
+  </li>
+</ol>
+You don't need to install these libraries.
+
+<h4>Installing ANITA GSE</h4>
+<ol>
+  <li>Download <a href="http://www.phys.hawaii.edu/%7Epredrag/anita/software/anitagse-current.tar.gz">GSE</a>
+distribution (or get the most up-to-date sources from SVN archive "https://delos.mps.ohio-state.edu/anitaGround/anitagse/trunk")<br>
+  </li>
+  <li>Unpack by running<br>
+    <pre>tar xzf anitagse-current.tar.gz<br>cd anitagse-2.0</pre>
+  </li>
+  <li>Set up environmental variables (if you use tcsh shell use <span style="font-family: monospace;">setenv</span> instead of <span style="font-family: monospace;">declare</span>)
+    <pre>declare -x CPPFLAGS=-I$ANITA_FLIGHT_SOFT_DIR/common<br>declare -x FLIGHTSOFT_LIBDIR=$ANITA_FLIGHT_SOFT_DIR/lib</pre>
+      You might need to setup additional variables as directed by <span style="font-family: monospace;">configure</span> script in the next step.
+  </li>
+  <li>Run <br>
+    <pre>./configure<br>make<br></pre>
+  </li>
+  <li>Edit <span style="font-family: monospace;">tcp/rules</span> file and add IP addresses from which you expect to receive the telemetry data stream
+  </li><li>Edit <span style="font-family: monospace;">./gseconf</span>
+file to setup directories structure and database name as appropriate for your system<br>
+  </li>
+  <li>Run <span style="font-family: monospace;">./gseconf</span></li>
+</ol>
+If no errors are reported you are ready to go. Output from database setup is in 
+<span style="font-family: monospace;">*_dbinit.log</span> file, where <span style="font-family: monospace;">'*'</span> will stand for $DBBASE_MMDD as set in <span style="font-family: monospace;">gseconf</span>.
+<br>
+If you have any questions or need help with setting things up, contact
+me.<br>
+
+<h2><a name="running"></a>Running GSE Software</h2>
+Running GSE software to receive and process data should be straight
+forward. From the top GSE directory execute <span style="font-family: monospace;">./gsecontrol run n</span> where n is
+1-5 as per list above.&nbsp; To stop, or to change the run mode,
+execute <span style="font-family: monospace;">./gsecontrol stop</span>
+optionally followed by <span style="font-family: monospace;">./</span><span style="font-family: monospace;">gsecontrol run</span><span style="font-family: monospace;"> n.</span>&nbsp; 
+Also, you may do <span style="font-family: monospace;">./gsecontrol stop n</span>, where only processes at given runlevel are stopped. This is useful if
+you want to stop data processing, but not data receiving. Consider following:
+<pre>./gsecontrol run 5      (levels 1, 2 &amp; 5 are running)
+./gsecontrol stop 5     (levels 1 &amp; 2 continue to run)
+./gsecontrol run 3      (levels 1, 2 &amp; 3 are running)
+./gsecontrol stop       (all stopped)
+./gsecontrol run 2      (levels 1 &amp; 2 are running)
+</pre> 
+Some data could have been lost between last two steps. Please note that changing
+the run mode is not retroactive, e.g. if you ran for a week in mode 1
+and then switched to mode 3, already received data will not be
+processed. In such case you will have to manually process the data to
+level 2 (untar and make appropriate links) at which
+point level 3 daemons will take over automatically. 
+<p>
+To completely disable GSE daemon services, execute <span style="font-family: monospace;">./gsecontrol terminate. </span>If you
+then choose to restart GSE daemons, you need to execute <span style="font-family: monospace;">./gsecontrol setup</span>, before <span style="font-family: monospace;">./gsecontrol run n.</span> 
+</p><p>
+All logs will be in subdirectories of log directory you specified in 
+<span style="font-family: monospace;">gseconf</span> file. They are timestamped in
+tai64 format and these stamps can be converted into local time if you run through
+<span style="font-family: monospace;">tai64nlocal</span> utility (part of daemontools
+distribution).
+</p><pre>cat &lt;some logfile&gt; | tai64nlocal</pre>
+<p>
+If your GSE server machine reboots while taking telemetry data and you have not terminated 
+through <span style="font-family: monospace;">./gsecontrol</span> prior to reboot, you can 
+run <span style="font-family: monospace;">./gsecontrol prime</span> and all GSE processes will 
+be restarted as before reboot. You can chose to add this command to your bootup script in case you
+want automatic restart of GSE processing. Consult your system administrator on the best way to do it. 
+<br>
+</p><h2><a name="monitor"></a>Monitoring GSE performance</h2>
+While running GSE software will produce several files in <span style="font-family: monospace;">/tmp</span> directory which can be used to monitor 
+it's performance and get quick view into most critical telemetry data. The following files 
+are generated;
+<ul>
+<li><span style="font-family: monospace;">anita_gpsloc.txt</span>
+contains the latest payload GPS position from the telemetry in the format 
+<pre> UNIX_UTC TimeOfDay Latitude Longitude Altitude</pre>
+</li><li><span style="font-family: monospace;">anita_gpsorient.txt</span>
+contains the latest payload orientation from the differential GPS telemetry in the format
+<pre> UNIX_UTC Heading Pitch Roll</pre>
+</li><li><span style="font-family: monospace;">anita_hkcrit.txt</span>
+contains critical housekeeping information from telemetry in the format
+<pre> UNIX_UTC Battery_Current PV_Voltage CPU_temp Radiator_Plate_Temp</pre>
+</li><li><span style="font-family: monospace;">anita_cmdecho.txt</span>
+contains the last command echo seen in telemetry in the format
+<pre> UNIX_UTC Good_Flag Command Bytes (first in hex, the rest in decimal)</pre>
+</li><li><span style="font-family: monospace;">anita_monitor_los.txt</span> (or on multi CPU/core server
+<span style="font-family: monospace;">anita_monitor_los_odd.txt</span> and 
+<span style="font-family: monospace;">anita_monitor_los_even.txt</span>) contains processing 
+information on LOS telemetry. The rates are given in kilobits(!) per second, and in the case
+of waveforms the bytes processed are only approximate due to decoding. On multi CPU/core servers,
+<span style="font-family: monospace;">odd</span> file will contain info on odd-numbered LOS telemetry
+file processing, while <span style="font-family: monospace;">even</span> file on even-numbered 
+telemetry files.
+</li><li><span style="font-family: monospace;">anita_monitor_sip_hr.txt</span> contains
+processing information on fast TDRSS telemetry.
+</li><li><span style="font-family: monospace;">anita_monitor_sip_hr.txt</span> contains
+processing information on slow TDRSS and Iridium telemetry.
+</li></ul>
+All of this information can be served through a web-server for local or remote monitoring. Point 
+the browser to <span style="font-family: monospace;">HTML_DIR</span> you specified in 
+<span style="font-family: monospace;">gseconf</span> file. You need go through web-server
+since CGI scripts need to be executed, i.e. use http://, not file://.
+
+<h2><a name="maintain"></a>Maintaining PostgreSQL database</h2>
+The database running on GSE server (assumed to be named <span style="font-family: monospace;">anita</span> 
+in these instructions) should be periodically maintained
+and backed up. These task are fairly straight forward, so they are not
+automated and rely on someone to do them!<br>
+Feel free to create cron jobs which will execute these on your system. <br>
+<ol>
+  <li><span style="font-weight: bold;">Optimizing performance</span><br>
+This should be done as often as reasonable (I suppose
+several times a day, but it mostly depends on data rate -- more data,
+more optimization). Execute<br>
+    <pre>psql &lt;dbname&gt; -c "ANALYZE [VERBOSE];"</pre>
+    Here, <span style="font-family: monospace;">VERBOSE</span> argument is optional.
+  </li>
+  <li><span style="font-weight: bold;">Database backup<br>
+    </span>The easiest way to make a self-consistent backup of running
+database is to dump it into a text file. The resulting file can be used
+to recreate the exact state of database at the dump time and will be
+about 30% smaller than the raw los data that were filed into database.
+Thus, this file will become big, but useful in case database is lost.
+Execute;<br>
+    <pre>pg_dump &lt;dbname&gt; | gzip &gt; db_backup.sql.gz<br></pre>
+Database can be recreated by executing;<br>
+    <pre>dropdb &lt;dbname&gt;        &lt;--------  This completely erases the database, so be careful<br>createdb &lt;dbname&gt;<br>gunzip -c db_backup.sql.gz | psql &lt;dbname&gt; <br></pre>
+  </li>
+</ol>
+
+<h2><a name="restart"></a>Starting new database</h2>
+Sometimes it is beneficial that a new database is started while
+telemetry is being received. In order to avoid stopping GSE server and
+possibly missing some incoming telemetry, this task should performed in
+following fashion;
+<ol>
+<li> <b>Automatically</b> (good for daily cron job)<br>
+Execute <span style="font-family: monospace;">gsecontrol rotate</span>. This will temporarily stop telemetry unpacking, start new database with the current UTC date and basename as specified in <span style="font-family: monospace;">gseconf</span>,
+and resume telemetry unpacking which will now flow into the new
+database. If you run this twice in a same UTC day, no new database will
+be created. If you wish to change database basename for future
+databases, the easiest is to edit file <span style="font-family: monospace;">local.config</span>.
+</li>
+<li> <b>Manually</b>
+<ul><li>Execute <span style="font-family: monospace;">gsecontrol stop &lt;n&gt;</span>, where <span style="font-family: monospace;">n</span> is your current runlevel between 3 and 5. If you are in lower run level, skip this command. </li>
+<li>Execute <span style="font-family: monospace;">makedb &lt;dbname&gt;</span></li>
+<li>Execute <span style="font-family: monospace;">gsecontrol run &lt;n&gt;</span>, where <span style="font-family: monospace;">n</span> is between 3 and 5</li>
+</ul>
+</li></ol>
+After starting a new database, it is a good idea to optimize old database. For manual optimization see <a href="#maintain">above</a>. If you automatically rotate databases with a cronjob, consider following;
+<pre>cd &lt;anitagse dir&gt;
+OLDDB=`cat ./currentdb`
+./gsecontrol rotate
+vacuumdb -z $OLDDB
+</pre>
+<br>
+<hr style="width: 100%; height: 2px;">
+<div style="margin-left: 40px;"><br>
+<br>
+<br>
+<div style="text-align: left;"><br>
+</div>
+<div style="margin-left: 120px;"><br>
+</div>
+</div>
+
+</body></html>

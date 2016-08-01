@@ -1,0 +1,9 @@
+# Format for sipcom low-rate tdrss data.
+#
+# Marty Olevitch, Aug '05
+# For Iridium and sip_hr data. ....Peng 2014
+
+B = 0xc0 mask 0xf0	# source: 0xc1 = comm1, 0xc2 = comm2
+B			# sequence no.
+B -> nbytes		# no. of data bytes
+B nbytes		# data

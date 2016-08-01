@@ -1,0 +1,120 @@
+# TIGER LDB 2003 raw data format
+# Used for parsing the input data. Note that in the 
+# parmhsk event, it doesn't do a "keep" on the nparms item. If you
+# want to use dataprint to look at the ldb03 data, this is 
+# probably NOT the right format file to use!
+
+endian offset 0 type S = 0xbef0 mask 0xfff0
+
+sig real	offset 0 type S = 0xbef1
+sig pedcal	offset 0 type S = 0xbef2
+sig lightcal	offset 0 type S = 0xbef3
+sig sensorhsk	offset 0 type S = 0xbef5
+sig mischsk	offset 0 type S = 0xbef6
+sig scalarhsk	offset 0 type S = 0xbef7
+sig reply	offset 0 type S = 0xbef8
+sig hipri	offset 0 type S = 0xbef9
+sig lopri	offset 0 type S = 0xbefa
+sig parmhsk	offset 0 type S = 0xbefb
+sig argos	offset 0 type S = 0xbefc
+sig anita	offset 0 type S = 0xbefe
+
+group full_hdr
+	S = 0xbef0 mask 0xfff0 : print "%x "
+	L : print "%lu "	# evt no.
+	L : print "%lu "	# tick count
+group_end
+
+group short_hdr
+	S = 0xbef0 mask 0xfff0 : print "%x "
+	L : print "%lu " 	# evt no.
+	S : print "%lu " 	# tick count LSW
+group_end
+
+group argos_hdr
+	S = 0xbefc : print "%x "
+	S : print "%u " 	# evt no. LSW
+group_end
+
+group pack	# packs 4 12-bit items into three 16-bit words
+	S 3
+group_end
+
+group parm
+	B 17 : print "%s "	# name
+	B    : print "%c "	# type = {B, S, L, F}
+	L    : print "%ld "	# val (could be char, short, long, or float)
+group_end
+
+evt parmhsk
+	full_hdr
+	S	# nparms and hsk seq
+	parm 10
+	S	# chksum
+
+evt argos
+	argos_hdr
+	S 2	: print "%u "		# raw coin scaler, evt scaler
+	pack 3 : print "%04x "
+	S 1 : print "%04x "
+	B : print " "
+
+evt real
+	full_hdr
+	pack 54 : print "%d "
+	S	# chksum
+
+evt pedcal
+	full_hdr
+	pack 54 : print "%d "
+	S	# chksum
+
+evt lightcal
+	full_hdr
+	pack 54 : print "%d "
+	S	# chksum
+
+evt sensorhsk
+	full_hdr
+	S	# hsk seq
+	pack 16 : print "%d "	# monitors
+	F 6 : print "%.2f "	# gps long, lat, time of week, utc offset, cpu time
+	S   : print "%u "	# gps week number
+	S   : print "%04x "	# crc
+
+evt mischsk
+	full_hdr
+	S	# hsk seq
+	pack 14 : print "%d "
+	S 2	: print "%02x "	# led pulse widths
+	S 1	: print "%d "	# priority cutoff value
+	S 3	: print "%02x "	# bit patterns
+	S	# crc
+
+evt scalarhsk
+	full_hdr
+	S	# hsk seq
+	S 67
+
+evt reply
+	full_hdr
+	B 82 : print "%s "
+	S 1 : print " "
+
+evt hipri
+	short_hdr
+	pack 20	: print "%d "	# detectors
+	S 32 : print "%04x "	# hodos
+	S 1
+
+evt lopri
+	short_hdr
+	pack 20	: print "%d "	# detectors
+	S 32 : print "%04x "	# hodos
+	S 1
+
+evt anita
+        full_hdr
+        B -> nbytes : print "%d "
+        B nbytes : print
+        S : print "%04x "       #chksum

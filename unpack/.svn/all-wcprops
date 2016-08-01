@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/anitaGround/!svn/ver/3161/anitagse/trunk/unpack
+END
+word.cc
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/anitaGround/!svn/ver/19/anitagse/trunk/unpack/word.cc
+END
+utilityFunctions.cc
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/anitaGround/!svn/ver/19/anitagse/trunk/unpack/utilityFunctions.cc
+END
+value.cc
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/anitaGround/!svn/ver/351/anitagse/trunk/unpack/value.cc
+END
+fileHandler.cc
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/anitaGround/!svn/ver/487/anitagse/trunk/unpack/fileHandler.cc
+END
+word.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/anitaGround/!svn/ver/282/anitagse/trunk/unpack/word.h
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/anitaGround/!svn/ver/547/anitagse/trunk/unpack/Makefile.in
+END
+utilityFunctions.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/anitaGround/!svn/ver/2871/anitagse/trunk/unpack/utilityFunctions.h
+END
+value.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/anitaGround/!svn/ver/282/anitagse/trunk/unpack/value.h
+END
+fileHandler.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/487/anitagse/trunk/unpack/fileHandler.h
+END
+unpackClasses.cc
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/anitaGround/!svn/ver/3161/anitagse/trunk/unpack/unpackClasses.cc
+END
+unpackClasses.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/anitaGround/!svn/ver/2939/anitagse/trunk/unpack/unpackClasses.h
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/anitaGround/!svn/ver/547/anitagse/trunk/unpack/Makefile.am
+END
+unpackd.cc
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/anitaGround/!svn/ver/3019/anitagse/trunk/unpack/unpackd.cc
+END

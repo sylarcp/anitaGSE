@@ -1,0 +1,13 @@
+#!/bin/bash 
+# 
+# Script that creates and initializes ANITA database
+#
+
+DBNAME=$1
+
+createdb $DBNAME
+# disabled, plpgsql language already added to template1 DB, it applies to all DB
+# createlang plpgsql $DBNAME
+psql $DBNAME -f create_tables.sql  > ${DBNAME}_init.log 2>&1
+
+echo -n $DBNAME > ./currentdb

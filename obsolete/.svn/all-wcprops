@@ -1,0 +1,155 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/anitaGround/!svn/ver/479/anitagse/trunk/obsolete
+END
+datmon_los.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/datmon_los.c
+END
+AcqDAQ.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/AcqDAQ.h
+END
+viewdump.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/viewdump.c
+END
+Makefile.in
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/Makefile.in
+END
+old_sql_functions.sql
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/anitaGround/!svn/ver/479/anitagse/trunk/obsolete/old_sql_functions.sql
+END
+lddl_unpackd_testlite.cc
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/lddl_unpackd_testlite.cc
+END
+unpackd_testlite.cc
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/unpackd_testlite.cc
+END
+unpackd_testlite.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/unpackd_testlite.h
+END
+shmem_lddl.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/shmem_lddl.c
+END
+create_tables.sql
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/anitaGround/!svn/ver/246/anitagse/trunk/obsolete/create_tables.sql
+END
+anitalite.fmt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/anitalite.fmt
+END
+unpackd.pl
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/anitaGround/!svn/ver/361/anitagse/trunk/obsolete/unpackd.pl
+END
+shmem_dataprint.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/shmem_dataprint.c
+END
+datmon.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/datmon.c
+END
+shmem_siphr.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/shmem_siphr.h
+END
+shmem_sipir.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/shmem_sipir.h
+END
+datmon_siphr.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/datmon_siphr.c
+END
+create_tables_testlite.sql
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/create_tables_testlite.sql
+END
+shmem_siplr.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/shmem_siplr.h
+END
+datmon_sipir.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/datmon_sipir.c
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/Makefile.am
+END
+parsenum.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/parsenum.c
+END
+datmon_siplr.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/datmon_siplr.c
+END
+datmon_raw.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/anitaGround/!svn/ver/19/anitagse/trunk/obsolete/datmon_raw.c
+END
+shmem_los.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/anitaGround/!svn/ver/26/anitagse/trunk/obsolete/shmem_los.h
+END

@@ -1,0 +1,15 @@
+This is ANITA GSE software. Refer to gse-setup.html for broad outline and installation instructions. 
+
+Content:
+* subdirectory unpack/ contains code that translates raw binary data into 
+PostgreSQL data base. It is to be run on GSE data servers and controlled 
+through top level scripts 
+* subdirectory html/ contains scripts to used to monitor GSE performance 
+through a web server
+* subdirectory tcp/ contains scripts for receiving and resending raw data
+* subdirectory lib/ containes some utility functions
+* subdirectory wvreader/ contains utility for calibration and rotation of raw wavaform files produced by flight computer
+
+-- Ped
+predrag@phys.hawaii.edu
+ 

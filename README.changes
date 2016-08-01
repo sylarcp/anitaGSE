@@ -1,0 +1,44 @@
+* list of changes made on anitagse for ANITA-2.    SM
+
+11-Jul, incorporated new flightSoft-II header files
+        (there were compile errors. lines causing them were commented
+	out in unpack/unpackClasses.cc)
+
+12-Jul, create_table.sql: channel ID was expanded from 0-80 to 0-89
+	(made *.anita-1 and *.anita-2. one suppose to be linked to 
+	create_table.sql to be used)
+
+13-Jul, added unit falg for ADU5, for there is two unnit in anita now  
+
+14-Jul, made changes to accomodate data format change on LOS
+	(on unpack/unpackClass.cc and lib/pckTools.c)
+	also, changed los.fmt data format file (copied sip_hr.fmt)
+
+15-Jul, calibration constant for 3_3v and 5sbi been changed
+
+17-Jul, broken hk_srf connection repaird in unpackClass.cc
+
+18-Jul, TRIIGER_SURFS (8) no longer used. switched to ACTIVE_SURFS (10)
+
+20-Jul, phiMask incorporated both in turf and header table 
+
+21-Jul, higher bits of packet code are masked to accomodate adu5 unit 
+	bits both in unpackClass.cpp and pckTools.c
+	(caused adu5 packet be regareded as invalid, since 13-Jul.)
+
+22-Jul, change scheme of getting run # (other -> hd.eventID)
+
+23-Jul, bug introduced while dealing with ADU5 unit code corrected
+
+24-Jul, phimasks are int2 defined where it's unsigned short. When the 
+	higher most bit was on, the data is rejected by DB. Corrected.
+
+
+-- to do
+
+ DB rotate does not work in cron -- find out why and correct
+
+ find why slow is not automatically processed into DB
+
+ change DB access scheme to reduce processing time
+

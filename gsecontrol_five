@@ -1,0 +1,286 @@
+#!/bin/bash
+#
+# Shell script that controls GSE daemons
+#
+# $Source: /cvsroot/anita-lite/gse/gsecontrol,v $
+# $Date: 2003/12/05 20:43:22 $
+# $Revision: 1.6 $
+# $Author: predragm $
+# 
+
+. ./local.config
+
+PATH=$DAEMONTOOLS_DIR:$PATH
+SVC=$DAEMONTOOLS_DIR/svc
+
+# List of daemons we'll supervise
+RECEIVE=$PWD/tcp/receive.sh        # Level 1
+PROCESS=$PWD/tcp/process_data.pl   # Level 2
+CLEARLINK=$PWD/clearlink.pl        # Level 3,4,5
+LINKFEED=$PWD/linkfeed.pl          # Level 3,4,5
+UNPACKD=$PWD/unpack/unpackd        # Level 3,4,5
+
+function mkbashrun()
+{
+    file=$1
+    niceLevel=$2
+    daemon=$3
+    flag=$4
+    echo \#!/bin/bash >$file
+    echo "exec 2>&1" >>$file
+    echo exec nice -$niceLevel $daemon $flag >>$file
+    chmod a+x $file
+}
+
+function mkperlrun()
+{
+    file=$1
+    niceLevel=$2
+    daemon=$3
+    flag=$4
+    echo \#!/bin/bash >$file
+    echo "exec 2>&1" >>$file
+    echo exec nice -$niceLevel perl -I $PWD $daemon $flag >>$file
+    chmod a+x $file
+}
+
+function mklogrun()
+{
+    file=$1
+    logdir=$2
+    mkdir -p $logdir
+    echo \#!/bin/bash >$file
+    echo exec $DAEMONTOOLS_DIR/multilog t n100000 s9999999 $logdir >>$file
+    chmod a+x $file
+}
+
+function mklinkfeed()
+{
+    niceLevel=$1
+    daemon=$2
+    type=$3
+
+    dir=$PWD/services/linkfeed_$type
+    mkdir -p $dir/log
+
+    mkperlrun $dir/run $niceLevel $daemon "$type $LINK_DIR"
+    mklogrun $dir/log/run $LOG_DIR/linkfeed_$type
+}
+
+function mkunpack()
+{
+    niceLevel=$1
+    daemon=$2
+    type=$3
+    fmt=$4
+    buff=$5
+    monstep=$6
+
+    rm -rf /tmp/unpackd_fifo_$type
+    mknod /tmp/unpackd_fifo_$type p
+    mkdir -p $TELEM_DIR/$type
+
+    dir=$PWD/services/unpackd3_$type
+    mkdir -p $dir/log
+    flag="-f $PWD/$fmt.fmt -b $buff -m/tmp/anita_monitor_$type.txt -u $monstep -d\`cat $PWD/currentdb\` /tmp/unpackd_fifo_$type"
+    mkbashrun $dir/run $niceLevel $daemon "$flag"
+    mklogrun $dir/log/run $LOG_DIR/unpackd3_$type
+
+    dir=$PWD/services/unpackd4_$type
+    mkdir -p $dir/log
+    flag="-f $PWD/$fmt.fmt -b $buff -m/tmp/anita_monitor_$type.txt -u $monstep -t $TELEM_DIR/$type /tmp/unpackd_fifo_$type"
+    mkbashrun $dir/run $niceLevel $daemon "$flag"
+    mklogrun $dir/log/run $LOG_DIR/unpackd4_$type
+
+    dir=$PWD/services/unpackd5_$type
+    mkdir -p $dir/log
+    flag="-f $PWD/$fmt.fmt -b $buff -m/tmp/anita_monitor_$type.txt -u $monstep -d\`cat $PWD/currentdb\` -t $TELEM_DIR/$type /tmp/unpackd_fifo_$type"
+    mkbashrun $dir/run $niceLevel $daemon "$flag"
+    mklogrun $dir/log/run $LOG_DIR/unpackd5_$type
+}
+
+# 
+# See how we were called. 
+# 
+case "$1" in
+    run)
+        # Start in correct run mode by making link to appropriate 
+        # directories
+	case "$2" in
+	    1) 
+	      if [ ! -e $FILENAME_PIPE ]; then 	
+ 	        ln -s /dev/null $FILENAME_PIPE
+              fi
+	      ln -sf $PWD/services/receive $PWD/active_services
+	      ;; 
+	    2)
+	      $0 run 1
+	      if [ ! -p $FILENAME_PIPE ]; then 
+ 	        rm -f $FILENAME_PIPE
+	        mkfifo $FILENAME_PIPE
+              fi
+	      ln -sf $PWD/services/process $PWD/active_services
+	      ;;
+	    [3-5])
+	      $0 run 2
+	      ln -sf $PWD/services/clearlink $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_los_0 $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_los_1 $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_los_2 $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_los_3 $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_los_4 $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_fast_tdrss $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_slow_tdrss $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_iridium $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_openport_odd $PWD/active_services
+	      ln -sf $PWD/services/linkfeed_openport_even $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_los_0 $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_los_1 $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_los_2 $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_los_3 $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_los_4 $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_sip_hr $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_sip_lr $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_iridium $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_openport_odd $PWD/active_services
+	      ln -sf $PWD/services/unpackd${2}_openport_even $PWD/active_services
+	      ;;
+	    *)
+	      echo "Usage: $0 run [1-5]"
+	      exit
+	esac
+	;;
+    stop)
+        # Stop run levels
+        case "$2" in
+            1)
+	      dir=$PWD/active_services/receive
+	      if test -d $dir; then
+	        if test -d $dir/log; then
+	          $SVC -dx $dir/log
+	        fi
+  	        $SVC -dx $dir 
+	        rm -f $dir
+              fi
+	      ;;
+	    2)
+              ln -sf /dev/null $FILENAME_PIPE
+              dir=$PWD/active_services/process
+              if test -d $dir; then
+	        if test -d $dir/log; then
+	          $SVC -dx $dir/log
+	        fi
+  	        $SVC -dx $dir 
+	        rm -f $dir
+              fi
+	      ;;
+            [3-5])
+              for dir in $PWD/active_services/unpackd${2}_* $PWD/active_services/*link* ; do
+	        if test -d $dir; then
+	          if test -d $dir/log; then
+	            $SVC -dx $dir/log
+	          fi
+  	          $SVC -dx $dir 
+	          rm -f $dir
+                fi
+              done
+              ;; 
+	    *)  
+              # Stop all daemons
+	      for dir in $PWD/active_services/[a-zA-Z]*; do
+	        if test -d $dir; then
+	          if test -d $dir/log; then
+	            $SVC -dx $dir/log
+	          fi
+  	          $SVC -dx $dir 
+	          rm -f $dir
+                fi
+	      done
+              ;;
+          esac
+          ;;
+    setup)
+	# Make sure we're terminated beforehand
+	killall -q svscan
+	killall -q supervise
+        # Configure all directories and links
+	mkdir -p $PWD/services/receive/log
+	cp -a $RECEIVE $PWD/services/receive/run
+	mklogrun $PWD/services/receive/log/run $LOG_DIR/receive
+
+	mkdir -p $PWD/services/process/log
+	mkperlrun $PWD/services/process/run 0 $PROCESS
+	mklogrun $PWD/services/process/log/run $LOG_DIR/process
+
+	mkdir -p $PWD/services/clearlink/log
+	mkperlrun $PWD/services/clearlink/run 0 $CLEARLINK "$AGE_CUT $LINK_DIR"
+	mklogrun $PWD/services/clearlink/log/run $LOG_DIR/clearlink
+
+	mklinkfeed 1 $LINKFEED los_0
+	mklinkfeed 1 $LINKFEED los_1
+	mklinkfeed 1 $LINKFEED los_2
+	mklinkfeed 1 $LINKFEED los_3
+	mklinkfeed 1 $LINKFEED los_4
+	mklinkfeed 1 $LINKFEED fast_tdrss
+	mklinkfeed 1 $LINKFEED slow_tdrss
+	mklinkfeed 1 $LINKFEED iridium
+	mklinkfeed 1 $LINKFEED openport_odd
+	mklinkfeed 1 $LINKFEED openport_even
+
+	mkunpack 5 $UNPACKD los_0 los 9000 5
+	mkunpack 5 $UNPACKD los_1 los 9000 5
+	mkunpack 5 $UNPACKD los_2 los 9000 5
+	mkunpack 5 $UNPACKD los_3 los 9000 5
+	mkunpack 5 $UNPACKD los_4 los 9000 5
+	mkunpack 5 $UNPACKD sip_hr sip_hr 9000 1
+	mkunpack 5 $UNPACKD sip_lr sip_lr 255 1
+	mkunpack 5 $UNPACKD iridium sip_lr 255 1
+	mkunpack 5 $UNPACKD openport_odd sip_hr 9000 5   # change from los.fmt to sip_hr.fmt
+	mkunpack 5 $UNPACKD openport_even sip_hr 9000 5 # change from los.fmt to sip_hr.fmt
+
+	$0 newdb
+
+	# Finally, start svscan
+	mkdir -p $PWD/active_services
+	$0 prime
+	;;
+    prime)
+        svscan $PWD/active_services &
+	;;
+    newdb)
+	HOUR=`date -u +%k`
+	if [ $HOUR -lt 5 ]
+	    then SUFFIX=a
+	elif [ $HOUR -lt 11 ]
+	    then SUFFIX=b
+	elif [ $HOUR -lt 17 ]
+	    then SUFFIX=c
+	    else SUFFIX=d
+	fi
+	DATE=`date -u +%m%d`
+	DBNAME=${DBBASE}_$DATE$SUFFIX
+	./makedb $DBNAME
+        ;;
+    rotate)
+        for dir in $PWD/active_services/*link* $PWD/active_services/unpackd* ; do
+	  if test -d $dir; then
+  	    $SVC -d $dir 
+          fi
+        done
+        $0 newdb
+        for dir in $PWD/active_services/unpackd* $PWD/active_services/*link* ; do
+	  if test -d $dir; then
+  	    $SVC -u $dir 
+          fi
+        done
+        ;;	
+    terminate)
+	$0 stop
+	killall -q svscan
+	killall -q supervise
+	rm -rf active_services services
+	;;
+    *)
+	echo "Usage: $0 {run n|stop [n]|setup|terminate|prime|newdb|rotate}"
+	exit
+esac

@@ -1,0 +1,27 @@
+#  memo for installing postgresql version 8.3.1 using backports.
+#                                     21-Jun-08   SM
+#
+
+- get newer version of Debian's postgres cluster manager and install
+  them with dpkg,
+
+ dpkg -i postgresql-client-common_88~bpo40+1_all.deb
+ dpkg -i postgresql-common_88~bpo40+1_all.deb.deb
+
+- put backports into /etc/apt/source.list by adding this line,
+
+deb http://www.backports.org/debian/ etch-backports main contrib non-free
+
+- update apt-get and get keyring by doing these,
+
+ apt-get update 
+ apt-get isntall debian-backports-keyring
+ apt-get update
+
+- install postgres version 8.3.1 client and server
+
+ apt-get install postgresql-client-8.3 postgresql-8,3
+
+- data will be stored into /var/lib/postgresql/<version #>/main and
+  configuration files are stored in /etc/postgresql/<version #>/main
+  directories. 

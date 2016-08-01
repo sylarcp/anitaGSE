@@ -1,0 +1,498 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ANITA Database Layout</title>
+  </head>
+
+  <body>
+    <h1>ANITA Database Layout</h1>
+<!-- hhmts start -->
+Last modified: Mon Nov  22 10:16:54 HST 2014
+<!-- hhmts end -->
+    <p>
+    ANITA telemetry database stores all data in tables listed here. Please refer to any SQL tutorial on how 
+    to retreive data from these tables, use variables for filters, etc. 
+    
+    <p><b>Tables available</b>
+    <TABLE BORDER=2>
+	<TR BGCOLOR="#99CCFF"> <TH>Table Name</TH>              <TH>Content</TH> </TR>
+	<TR> <TD><a href="#hd">hd</a></TD>     <TD>Event headers</TD> </TR>
+	<TR> <TD><a href="#run">run</a></TD>     <TD>Run starts</TD> </TR>
+	<TR> <TD><a href="#wv">wv</a></TD>     <TD>Event waveforms</TD> </TR>
+	<TR> <TD><a href="#wv_ped">wv_ped</a></TD><TD>Waveform pedestals</TD> </TR>
+	<TR> <TD><a href="#hk">hk</a></TD>     <TD>Housekeeping data</TD> </TR>
+	<TR> <TD><a href="#hk_cal">hk_cal</a></TD>     <TD>Housekeeping calibrations</TD> </TR>
+	<TR> <TD><a href="#hk_surf">hk_surf</a></TD>     <TD>SURF housekeeping data</TD> </TR>
+	<TR> <TD><a href="#sshk">sshk</a></TD>     <TD>sun sensor Housekeeping data</TD> </TR>
+	<TR> <TD><a href="#turf">turf</a></TD>     <TD>TURF trigger rates</TD> </TR>
+	<TR> <TD><a href="#mon">mon</a></TD>     <TD>CPU monitor data</TD> </TR>
+	<TR> <TD><a href="#other">other</a></TD>     <TD>CPU other monitor data</TD> </TR>
+	<TR> <TD><a href="#adu5_pat">adu5_pat</a></TD>     <TD>ADU5 GPS position data</TD> </TR>
+	<TR> <TD><a href="#adu5_vtg">adu5_vtg</a></TD>     <TD>ADU5 GPS velocity data</TD> </TR>
+	<TR> <TD><a href="#adu5_sat">adu5_sat</a></TD>     <TD>ADU5 GPS satellite coverage data</TD> </TR>
+	<TR> <TD><a href="#g12_pos">g12_pos</a></TD>     <TD>G12 GPS position data</TD> </TR>
+	<TR> <TD><a href="#g12_sat">g12_sat</a></TD>     <TD>G12 GPS satellite coverage data</TD> </TR>
+	<TR> <TD><a href="#cmd">cmd</a></TD>     <TD>Command echos</TD> </TR>
+	<TR> <TD><a href="#slow">slow</a></TD>     <TD>Slow link data</TD> </TR>
+	<TR> <TD><a href="#wakeup">wakeup</a></TD>     <TD>Telemetry wakeup packets</TD> </TR>
+	<TR> <TD><a href="#file">file</a></TD>     <TD>Configuration and log file dumps</TD> </TR>
+    </TABLE>
+
+    <p><b>Variable type names</b>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>int</TD><TD>4 byte integer</TD></TR>
+	<TR><TD>int4</TD><TD>4 byte integer</TD></TR>
+	<TR><TD>int2</TD><TD>2 byte integer</TD></TR>
+	<TR><TD>real</TD><TD>Single precision, 4 byte floating point number</TD></TR>
+	<TR><TD>xxx[]</TD><TD>Array of type xxx</TD></TR>
+	<TR><TD>xxx[][]</TD><TD>2D array of type xxx</TD></TR>
+	<TR><TD>text</TD><TD>Variable length string</TD></TR>
+    </TABLE>
+
+    <p><b>Checksum check values</b><br>
+      <i>Wrapper</i> checksum is calculated by telemetry software (i.e. Marty), while <i>packet</i> and <i>waveform</i>
+      checksums are calculated by flight software (i.e. Ryan). Red fields are paradoxical states, i.e. they would indicate 
+      some software failure, not true telemetry information loss. Italicized fields apply to wavefrom checksums (i.e.
+      in wv table), while the rest to all other packet checksums.
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Value</TH> <TH>Comment</TH></TR>
+	<TR><TD>0</TD><TD>wrapper and packet failed</TD></TR>
+	<TR><TD>0</TD><TD><i>wrapper, packet, and waveform failed</i></TD></TR>
+	<TR><TD>1</TD><TD>wrapper failed, packet passed</TD></TR>
+	<TR><TD>1</TD><TD><i>wrapper failed, packet passed, waveform failed</i></TD></TR>
+	<TR BGCOLOR="#ff1111"><TD>2</TD><TD><i>wrapper failed, packet failed, waveform passed</i></TD></TR>
+	<TR><TD>3</TD><TD><i>wrapper failed, packet passed, waveform passed</i></TD></TR>
+	<TR BGCOLOR="#ff1111"><TD>256</TD><TD>wrapper passed, packet failed</TD></TR>
+	<TR BGCOLOR="#ff1111"><TD>256</TD><TD><i>wrapper passed, packet and waveform failed</i></TD></TR>
+	<TR><TD>257</TD><TD>wrapper and packet passed</TD></TR>
+	<TR><TD>257</TD><TD><i>wrapper passed, packet passed, waveform failed</i></TD></TR>
+	<TR BGCOLOR="#ff1111"><TD>258</TD><TD><i>wrapper passed, packet failed, wavefrom passed</i></TD></TR>
+	<TR><TD>259</TD><TD><i>wrapper, packet, and waveform passed</i></TD></TR>
+    </TABLE>
+
+    <p><a name="hk_cal"><b>TABLE hk_cal variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>code</TD><TD>int2</TD><TD>IP320 analogue code; 512=AVZ calibration, 768=CAL calibration</TD></TR>
+	<TR><TD>bd1</TD><TD>int2[]</TD><TD>Acromag board 1 ADC values (40 entries)</TD></TR>
+	<TR><TD>bd2</TD><TD>int2[]</TD><TD>Acromag board 2 ADC values (40 entries)</TD></TR>
+	<TR><TD>bd3</TD><TD>int2[]</TD><TD>Acromag board 3 ADC values (40 entries)</TD></TR>
+    </TABLE>
+
+
+    <p><a name="hk"><b>TABLE hk variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>code</TD><TD>int2</TD><TD>IP320 analogue code; 256=RAW data</TD></TR>
+	<TR><TD>cal</TD><TD>int</TD><TD>nbuf of hk_cal table entry used for CAL calibration</TD></TR>
+	<TR><TD>avz</TD><TD>int</TD><TD>nbuf of hk_cal table entry used for AVZ calibration</TD></TR>
+	<TR><TD>bd1</TD><TD>int2[]</TD><TD>Acromag board 1 ADC values (40 entries)</TD></TR>
+	<TR><TD>bd2</TD><TD>int2[]</TD><TD>Acromag board 2 ADC values (40 entries)</TD></TR>
+	<TR><TD>bd3</TD><TD>int2[]</TD><TD>Acromag board 3 ADC values (40 entries)</TD></TR>
+	<TR><TD>calb1</TD><TD>real[]</TD><TD>Acromag board 1 calibrated voltages (40 entries)</TD></TR>
+	<TR><TD>calb2</TD><TD>real[]</TD><TD>Acromag board 2 calibrated voltages (40 entries)</TD></TR>
+	<TR><TD>calb3</TD><TD>real[]</TD><TD>Acromag board 3 calibrated voltages (40 entries)</TD></TR>
+	<TR><TD>accx</TD><TD>real[]</TD><TD>Accelerometer X values (2 entries)</TD></TR>
+	<TR><TD>accy</TD><TD>real[]</TD><TD>Accelerometer Y values (2 entries)</TD></TR>
+	<TR><TD>accz</TD><TD>real[]</TD><TD>Accelerometer Z values (2 entries)</TD></TR>
+	<TR><TD>acct</TD><TD>real[]</TD><TD>Accelerometer temperatures (2 entries)</TD></TR>
+	<TR><TD>ssx</TD><TD>real[]</TD><TD>Sun sensor X values (4 entries)</TD></TR>
+	<TR><TD>ssy</TD><TD>real[]</TD><TD>Sun sensor Y values (4 entries)</TD></TR>
+	<TR><TD>ssi</TD><TD>real[]</TD><TD>Sun sensor intensities (4 entries)</TD></TR>
+	<TR><TD>ssflag</TD><TD>int2[]</TD><TD>Sun sensor quality flag (4 entries)</TD></TR>
+	<TR><TD>ssel</TD><TD>real[]</TD><TD>Sun elevation (4 entries)</TD></TR>
+	<TR><TD>ssaz</TD><TD>real[]</TD><TD>Sun azimuth (4 entries)</TD></TR>
+	<TR><TD>sst</TD><TD>real[]</TD><TD>Sun sensor temperatures (4 entries)</TD></TR>
+	<TR><TD>pressh</TD><TD>real</TD><TD>Pressure sensor high in PSI</TD></TR>
+	<TR><TD>pressl</TD><TD>real</TD><TD>Pressure sensor low in Torr</TD></TR>
+	<TR><TD>p1_5v</TD><TD>real</TD><TD>+1.5V true voltage</TD></TR>
+	<TR><TD>p3_3v</TD><TD>real</TD><TD>+3.3V true voltage</TD></TR>
+	<TR><TD>p5v</TD><TD>real</TD><TD>+5V true voltage</TD></TR>
+	<TR><TD>p5sbv</TD><TD>real</TD><TD>+5V short board true voltage</TD></TR>
+	<TR><TD>p12v</TD><TD>real</TD><TD>+12V true voltage</TD></TR>
+	<TR><TD>p24v</TD><TD>real</TD><TD>+24V true voltage</TD></TR>
+	<TR><TD>ppvv</TD><TD>real</TD><TD>PV true voltage</TD></TR>
+	<TR><TD>n5v</TD><TD>real</TD><TD>-5V true voltage</TD></TR>
+	<TR><TD>n12v</TD><TD>real</TD><TD>-12V true voltage</TD></TR>
+	<TR><TD>iprf1v</TD><TD>real</TD><TD>IPRF1 true voltage</TD></TR>
+	<TR><TD>iprf2v</TD><TD>real</TD><TD>IPRF2 true voltage</TD></TR>
+	<TR><TD>p1_5i</TD><TD>real</TD><TD>+1.5V supply current in amps</TD></TR>
+	<TR><TD>p3_3i</TD><TD>real</TD><TD>+3.3V supply current in amps</TD></TR>
+	<TR><TD>p5i</TD><TD>real</TD><TD>+5V supply current in amps</TD></TR>
+	<TR><TD>p5sbi</TD><TD>real</TD><TD>+5V short board supply current in amps</TD></TR>
+	<TR><TD>p12i</TD><TD>real</TD><TD>+12V supply current in amps</TD></TR>
+	<TR><TD>p24i</TD><TD>real</TD><TD>+24V supply current in amps</TD></TR>
+	<TR><TD>ppvi</TD><TD>real</TD><TD>PV current in amps</TD></TR>
+	<TR><TD>n5i</TD><TD>real</TD><TD>-5V supply current in amps</TD></TR>
+	<TR><TD>n12i</TD><TD>real</TD><TD>-12V supply current in amps</TD></TR>
+	<TR><TD>iprf1i</TD><TD>real</TD><TD>IPRF1 supply current in amps</TD></TR>
+	<TR><TD>iprf2i</TD><TD>real</TD><TD>IPRF2 supply current in amps</TD></TR>
+	<TR><TD>bati</TD><TD>real</TD><TD>Battery current in amps</TD></TR>
+	<TR><TD>it</TD><TD>real[]</TD><TD>Internal temperature sensors in deg C (25 entries)</TD></TR>
+	<TR><TD>et</TD><TD>real[]</TD><TD>External temperature sensors in deg C (25 entries)</TD></TR>
+	<TR><TD>sbst1</TD><TD>int4</TD><TD>CPU temperature 1</TD></TR>
+	<TR><TD>sbst2</TD><TD>int4</TD><TD>CPU temperature 2</TD></TR>
+	<TR><TD>core1</TD><TD>int4</TD><TD>CPU temperature 3</TD></TR>
+	<TR><TD>core2</TD><TD>int4</TD><TD>CPU temperature 4</TD></TR>
+	<TR><TD>sbst5</TD><TD>int4</TD><TD>CPU temperature 5</TD></TR>
+	<TR><TD>sbst6</TD><TD>int4</TD><TD>CPU temperature 6</TD></TR>
+	<TR><TD>magx</TD><TD>real</TD><TD>Magnetometer X value</TD></TR>
+	<TR><TD>magy</TD><TD>real</TD><TD>Magnetometer Y value</TD></TR>
+        <TR><TD>magz</TD><TD>real</TD><TD>Magnetometer Z value</TD></TR>
+    </TABLE>
+ <p><a name="sshk"><b>TABLE sshk variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>code</TD><TD>int2</TD><TD>IP320 analogue code; 256=RAW data</TD></TR>
+	<TR><TD>cal</TD><TD>int</TD><TD>nbuf of hk_cal table entry used for CAL calibration</TD></TR>
+	<TR><TD>avz</TD><TD>int</TD><TD>nbuf of hk_cal table entry used for AVZ calibration</TD></TR>
+	<TR><TD>bd1</TD><TD>int2[]</TD><TD>Acromag board 1 ADC values (40 entries)</TD></TR>
+	<TR><TD>calb1</TD><TD>real[]</TD><TD>Acromag board 1 calibrated voltages (40 entries)</TD></TR>
+	<TR><TD>ssx</TD><TD>real[]</TD><TD>Sun sensor X values (4 entries)</TD></TR>
+	<TR><TD>ssy</TD><TD>real[]</TD><TD>Sun sensor Y values (4 entries)</TD></TR>
+	<TR><TD>ssi</TD><TD>real[]</TD><TD>Sun sensor intensities (4 entries)</TD></TR>
+	<TR><TD>ssflag</TD><TD>int2[]</TD><TD>Sun sensor quality flag (4 entries)</TD></TR>
+	<TR><TD>ssel</TD><TD>real[]</TD><TD>Sun elevation (4 entries)</TD></TR>
+	<TR><TD>ssaz</TD><TD>real[]</TD><TD>Sun azimuth (4 entries)</TD></TR>
+	<TR><TD>sst</TD><TD>real[]</TD><TD>Sun sensor temperatures (4 entries)</TD></TR>
+    </TABLE>
+    <p><a name="hk_surf"><b>TABLE hk_surf variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>global</TD><TD>int4</TD><TD>Global threshold setting</TD></TR>
+	<TR><TD>error</TD><TD>int4</TD><TD>Error flag (AFAIK values undefined)</TD></TR>
+	<TR><TD>scalergoals</TD><TD>int4</TD><TD>Scaler target rate in kHz</TD></TR>
+	<TR><TD>upper</TD><TD>int4[]</TD><TD>Upper words, one per SURF</TD></TR>
+	<TR><TD>scaler</TD><TD>int4[][]</TD><TD>Scaler rates in kHz, 32 entries per SURF (8 by 32 array)</TD></TR>
+	<TR><TD>thresh</TD><TD>int4[][]</TD><TD>Threshold ADC values, 32 entries per SURF (8 by 32 array)</TD></TR>
+	<TR><TD>threshold</TD><TD>int4[][]</TD><TD>Threshold ADC values, 32 entries per SURF (8 by 32 array)</TD></TR>
+	<TR><TD>rfpow</TD><TD>int4[][]</TD><TD>RF power values in ADC values, 8 per SURF (10 by 8 array)</TD></TR>
+	<TR><TD>l1scaler</TD><TD>int4[][]</TD><TD> l1 scaler</TD></TR>
+	<TR><TD>surfmask</TD><TD>int4[]</TD><TD>Surf RF trigger band mask (32-bit fields), one per SURF</TD></TR>
+    </TABLE>
+
+    <p><a name="turf"><b>TABLE turf variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>deadtime</TD><TD>int</TD><TD> deadtime</TD></TR>
+	<TR><TD>l1trigmask</TD><TD>int</TD><TD> l1trigmask vertical</TD></TR>
+	<TR><TD>l1trigmaskh</TD><TD>int</TD><TD> l1trigmask horizontal</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>l1</TD><TD>int2[]</TD><TD>Level 1 trigger rates in vertical (Hz) (16 entries)</TD></TR>
+	<TR><TD>l1h</TD><TD>int2[]</TD><TD>Level 1 trigger rates in horizontal (Hz) (16 entries)</TD></TR>
+	<TR><TD>l3</TD><TD>int2[]</TD><TD>Level 3 trigger rates in vertical (Hz) (16 entries)</TD></TR>
+	<TR><TD>l3h</TD><TD>int2[]</TD><TD>Level 3 trigger rates in horizontal (Hz) (16 entries)</TD></TR>
+    </TABLE>
+
+    <p><a name="mon"><b>TABLE mon variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>disk</TD><TD>int4[]</TD><TD>Free disk space in MB (8 entries)<br>
+	                                    1 - RAM disk<br>
+	                                    2 - Root partition<br>
+                                            3 - Home partition<br>
+	                                    4 - PMC disk<br>
+                                            5 - SATA Blade<br>
+	                                    6 - SATA mini<br>
+                                            7 - Home<br>
+	                                    8 - Neo Brick</TD></TR>
+	<TR><TD>blade</TD><TD>text</TD><TD>Label of mounted blade disk</TD></TR>
+	<TR><TD>usbint</TD><TD>text</TD><TD>Label of mounted USB internal disk</TD></TR>
+	<TR><TD>usbext</TD><TD>text</TD><TD>Label of mounted USB external disk</TD></TR>
+	<TR><TD>linkev</TD><TD>int4[]</TD><TD>Events waiting in priority queues (10 entries)</TD></TR>
+	<TR><TD>linkcmdlos</TD><TD>int4</TD><TD>Command echos waiting in LOS queue</TD></TR>
+	<TR><TD>linkcmdsip</TD><TD>int4</TD><TD>Command echos waiting in SIP queue</TD></TR>
+	<TR><TD>linkgps</TD><TD>int4</TD><TD>GPS packets waiting in a queue</TD></TR>
+	<TR><TD>linkhk</TD><TD>int4</TD><TD>Housekeeping packets waiting in a queue</TD></TR>
+	<TR><TD>linkmon</TD><TD>int4</TD><TD>Monitor packets waiting in a queue</TD></TR>
+	<TR><TD>linkhd</TD><TD>int4</TD><TD>Header packets waiting in a queue</TD></TR>
+	<TR><TD>linksurf</TD><TD>int4</TD><TD>SURF housekeeping packets waiting in a queue</TD></TR>
+	<TR><TD>linkturf</TD><TD>int4</TD><TD>TURF rate packets waiting in a queue</TD></TR>
+	<TR><TD>linkped</TD><TD>int4</TD><TD>Pedestal packets waiting in a queue</TD></TR>
+    </TABLE>
+
+     <p><a name="other"><b>TABLE other variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+        <TR><TD>raminodes</TD><TD>int</TD><TD>RAM disk inodes</TD></TR>
+    	<TR><TD>runtime</TD><TD>int</TD><TD>Run start time</TD></TR>
+        <TR><TD>runevnum</TD><TD>int</TD><TD>Run start event number</TD></TR>
+        <TR><TD>runnum</TD><TD>int</TD><TD>Run number</TD></TR>
+	<TR><TD>filesacqd</TD><TD>int</TD><TD>Files in /tmp/anita/acqd</TD></TR>
+        <TR><TD>fileseventd</TD><TD>int</TD><TD>Files in /tmp/anita/eventd</TD></TR>
+	<TR><TD>filesprior</TD><TD>int</TD><TD>Files in /tmp/anita/prioritizerd </TD></TR>   
+	<TR><TD>lnacqd</TD><TD>int</TD><TD>Links in /tmp/anita/acqd</TD></TR>
+        <TR><TD>lneventd</TD><TD>int</TD><TD>Links in /tmp/anita/eventd</TD></TR>
+	<TR><TD>lnprior</TD><TD>int</TD><TD>Links in /tmp/anita/prioritizerd </TD></TR>   
+	<TR><TD>other</TD><TD>int</TD><TD>Other flag</TD></TR>
+    </TABLE>
+
+    <p><a name="adu5_pat"><b>TABLE adu5_pat variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>gpstype</TD><TD>int</TD><TD> gpstype,  ADU5A=2, ADU5B=4</TD></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>code</TD><TD>int</TD><TD>packet code contains adu5 unit #</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>tod</TD><TD>int</TD><TD>Time of Day in milliseconds since midnight</TD></TR>
+	<TR><TD>heading</TD><TD>real</TD><TD>Payload heading in degrees</TD></TR>
+	<TR><TD>pitch</TD><TD>real</TD><TD>Payload  pitch in degrees</TD></TR>
+	<TR><TD>roll</TD><TD>real</TD><TD>Payload roll in degrees</TD></TR>
+	<TR><TD>mrms</TD><TD>real</TD><TD>Attitude phase measurement RMS error in meters</TD></TR>
+	<TR><TD>brms</TD><TD>real</TD><TD>Attitude baseline length RMS error in meters</TD></TR>
+	<TR><TD>flag</TD><TD>int2</TD><TD>Quality flag; either 0 or 1</TD></TR>
+	<TR><TD>latitude</TD><TD>real</TD><TD>Payload latitude in degrees</TD></TR>
+	<TR><TD>longitude</TD><TD>real</TD><TD>Payload longitude in degrees</TD></TR>
+	<TR><TD>altitude</TD><TD>real</TD><TD> Payload altitude in meters</TD></TR>
+    </TABLE>
+
+    <p><a name="adu5_vtg"><b>TABLE adu5_vtg variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>gpstype</TD><TD>int</TD><TD> gpstype,  ADU5A=2, ADU5B=4</TD></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>code</TD><TD>int</TD><TD>packet code contains adu5 unit #</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>course</TD><TD>real</TD><TD>True course in degrees(?) relative to true north</TD></TR>
+	<TR><TD>mcourse</TD><TD>real</TD><TD>Magnetic course in degrees(?) relative to magtenic north</TD></TR>
+	<TR><TD>vkt</TD><TD>real</TD><TD>Speed in knots</TD></TR>
+	<TR><TD>vkph</TD><TD>real</TD><TD>Speed in kph</TD></TR>
+    </TABLE>
+
+    <p><a name="adu5_sat"><b>TABLE adu5_sat variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>gpstype</TD><TD>int</TD><TD> gpstype,  ADU5A=2, ADU5B=4</TD></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>code</TD><TD>int</TD><TD>packet code contains adu5 unit #</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>numsats</TD><TD>int2[]</TD><TD>Number of satellites per antenna (4 entries)</TD></TR>
+	<TR><TD>prn</TD><TD>int2[][]</TD><TD>PRN value, numsats (up to 20) per antenna (4 by corresponding numsats entries)</TD></TR>
+	<TR><TD>elevation</TD><TD>int2[][]</TD><TD>Satellite elevation, numsats (up to 20) per antenna (4 by corresponding numsats entries)</TD></TR>
+	<TR><TD>snr</TD><TD>int2[][]</TD><TD>Satellite signal SNR, numsats (up to 20) per antenna (4 by corresponding numsats entries)</TD></TR>
+	<TR><TD>flag</TD><TD>int2[][]</TD><TD>Quality flag, numsats (up to 20) per antenna (4 by corresponding numsats entries)</TD></TR>
+	<TR><TD>azimuth</TD><TD>int4[][]</TD><TD>Satellite azimuth, numsats (up to 20) per antenna (4 by corresponding numsats entries)</TD></TR>
+    </TABLE>
+
+    <p><a name="g12_pos"><b>TABLE g12_pos variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>numsats</TD><TD>int4</TD><TD>Number of satellites</TD></TR>
+	<TR><TD>latitude</TD><TD>real</TD><TD>Payload latitude in degrees</TD></TR>
+	<TR><TD>longitude</TD><TD>real</TD><TD>Payload longitude in degrees</TD></TR>
+	<TR><TD>altitude</TD><TD>real</TD><TD> Payload altitude in meters</TD></TR>
+	<TR><TD>course</TD><TD>real</TD><TD>True course in degrees(?) relative to true north</TD></TR>
+	<TR><TD>upv</TD><TD>real</TD><TD>Vertical velocity (units?)</TD></TR>
+	<TR><TD>vkt</TD><TD>real</TD><TD>Speed in knots</TD></TR>
+	<TR><TD>pdop</TD><TD>real</TD><TD>PDOP value</TD></TR>
+	<TR><TD>hdop</TD><TD>real</TD><TD>HDOP value</TD></TR>
+	<TR><TD>vdop</TD><TD>real</TD><TD>VDOP value</TD></TR>
+	<TR><TD>tdop</TD><TD>real</TD><TD>TDOP value</TD></TR>
+	<TR><TD>unit</TD><TD>int2</TD><TD>G12 unit # (always 0)</TD></TR>
+    </TABLE>
+
+    <p><a name="g12_sat"><b>TABLE g12_sat variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>numsats</TD><TD>int2</TD><TD>Number of satellites</TD></TR>
+	<TR><TD>prn</TD><TD>int2[]</TD><TD>PRN value, (numsats entries, up to 20)</TD></TR>
+	<TR><TD>elevation</TD><TD>int2[]</TD><TD>Satellite elevation, (numsats entries, up to 20)</TD></TR>
+	<TR><TD>snr</TD><TD>int2[]</TD><TD>Satellite signal SNR, (numsats entries, up to 20)</TD></TR>
+	<TR><TD>flag</TD><TD>int2[]</TD><TD>Quality flag, (numsats entries, up to 20)</TD></TR>
+	<TR><TD>azimuth</TD><TD>int4[]</TD><TD>Satellite azimuth, (numsats entries, up to 20)</TD></TR>
+    </TABLE>
+
+    <p><a name="cmd"><b>TABLE cmd variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>flag</TD><TD>int2</TD><TD>Goodness flag; either 0 or 1</TD></TR>
+	<TR><TD>bytes</TD><TD>int2</TD><TD>Number of command bytes</TD></TR>
+	<TR><TD>cmd</TD><TD>int2</TD><TD>Command bytes (up to 10 entries)</TD></TR>
+    </TABLE>
+
+    <p><a name="wakeup"><b>TABLE wakeup variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>type</TD><TD>int2</TD><TD>Telemetry channel type<br>
+	                                  0 = LOS<br>
+	                                  1 = High rate TDRSS<br>
+	                                  2 = Low rate COM1<br>
+	                                  3 = Low rate COM2</TD></TR>
+    </TABLE>
+
+    <p><a name="file"><b>TABLE file variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>filename</TD><TD>text</TD><TD>Name of the file transmitted</TD></TR>
+	<TR><TD>length</TD><TD>int</TD><TD>Length of file in bytes</TD></TR>
+	<TR><TD>content</TD><TD>text</TD><TD>File content</TD></TR>
+    </TABLE>
+
+    <p><a name="slow"><b>TABLE slow variables (UPDATE!)</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>evnum</TD><TD>int</TD><TD>Last event number</TD></TR>
+	<TR><TD>latitude</TD><TD>real</TD><TD>Last payload latitude in degrees</TD></TR>
+	<TR><TD>longitude</TD><TD>real</TD><TD>Last payload longitude in degrees</TD></TR>
+	<TR><TD>altitude</TD><TD>real</TD><TD>Last payload altitude in meters</TD></TR>
+	<TR><TD>tempraw</TD><TD>int2[]</TD><TD>Housekeeping temperatures, 8 entries, ADC counts (except tempraw[1] which is in degrees)</TD></TR>
+	<TR><TD>powerraw</TD><TD>int2[]</TD><TD>Housekeeping voltages and currents, 4 entries, ADC counts</TD></TR>
+	<TR><TD>tempv</TD><TD>real[]</TD><TD>Housekeeping temperatures, 8 entries, voltages (except tempv[1] which is 0)</TD></TR>
+	<TR><TD>powerv</TD><TD>real[]</TD><TD>Housekeeping voltages and currents, 4 entries, voltages</TD></TR>
+	<TR><TD>temp</TD><TD>real[]</TD><TD>Housekeeping temperatures, 8 entries, degrees C</TD></TR>
+	<TR><TD>ppvv</TD><TD>real</TD><TD>PV voltage</TD></TR>
+	<TR><TD>p24v</TD><TD>real</TD><TD>+24V voltage</TD></TR>
+	<TR><TD>bati</TD><TD>real</TD><TD>Battery current</TD></TR>
+	<TR><TD>p24i</TD><TD>real</TD><TD>+24V current</TD></TR>
+	<TR><TD>rate1</TD><TD>real</TD><TD>Event rate integrated over 1 minute in Hz</TD></TR>
+	<TR><TD>rate10</TD><TD>real</TD><TD>Event rate integrated over 10 minutes in Hz</TD></TR>
+	<TR><TD>avgl3</TD><TD>int2[]</TD><TD>Average level 3 rate in Hz (16 sectors, multiplied by 32)</TD></TR>
+	<TR><TD>avgscaler</TD><TD>int2[][]</TD><TD>Average scaler rates (10 surfs by 4 antennas) in kHz(?)</TD></TR>
+	<TR><TD>avgrfpow</TD><TD>int2[][]</TD><TD>Average RF power ADC values, (10 surfs by 8 RF channels)</TD></TR>
+    </TABLE>
+
+     <p><a name="run"><b>TABLE run variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>evnum</TD><TD>int</TD><TD>Start event number</TD></TR>
+	<TR><TD>run</TD><TD>int</TD><TD>Run number</TD></TR>
+    </TABLE>
+
+    <p><a name="hd"><b>TABLE hd variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet</TD></TR>
+	<TR><TD>us</TD><TD>int</TD><TD>UNIX microsecond timestamp of data packet</TD></TR>
+	<TR><TD>ns</TD><TD>int</TD><TD>Nanosecond part of second from GPS</TD></TR>
+	<TR><TD>evid</TD><TD>int</TD><TD>turf event ID ; 12bit(run#) + 20bit(ev# in run)</TD></TR>
+	<TR><TD>evnum</TD><TD>int</TD><TD>Event number</TD></TR>
+	<TR><TD>surfmask</TD><TD>int2</TD><TD>SURF mask (12-bit value)</TD></TR>
+	<TR><TD>calib</TD><TD>int</TD><TD>Calibration status (see flight software documentation for interpretation)</TD></TR>
+	<TR><TD>priority</TD><TD>int2</TD><TD>Event priority</TD></TR>
+	<TR><TD>turfword</TD><TD>int2</TD><TD>TURF upper word</TD></TR>
+	<TR><TD>l1mask</TD><TD>int</TD><TD>l1 trigger mask in vertical (32-bit value)</TD></TR>
+	<TR><TD>l1maskh</TD><TD>int</TD><TD>l1 trigger mask in horizontal (32-bit value)</TD></TR>
+	<TR><TD>phimask</TD><TD>int</TD><TD>Phi mask in vertical (32-bit value)</TD></TR>
+	<TR><TD>phimaskh</TD><TD>int</TD><TD>Phi trigger mask in horizontal (32-bit value)</TD></TR>
+	<TR><TD>trigtype</TD><TD>int2</TD><TD>TURFIO trigger type</TD></TR>
+	<TR><TD>trignum</TD><TD>int</TD><TD>TURFIO trigger number</TD></TR>
+	<TR><TD>l3cnt</TD><TD>int2</TD><TD>TURFIO L3 type1 count</TD></TR>
+	<TR><TD>pps</TD><TD>int</TD><TD>TURFIO pps number</TD></TR>
+	<TR><TD>trigtime</TD><TD>int</TD><TD>TURFIO trigger time</TD></TR>
+	<TR><TD>c3po</TD><TD>int</TD><TD>TURFIO C3PO number</TD></TR>
+	<TR><TD>deadtime</TD><TD>int</TD><TD>TURFIO deadtime (expressed as value in [0,64400])</TD></TR>
+	<TR><TD>l3trigpat</TD><TD>int</TD><TD>L3 trigger patern in vertical (16-bit value, 1 bit per phi sector)
+	<TR><TD>l3trigpath</TD><TD>int</TD><TD>L3 trigger patern in horizontal(16-bit value, 1 bit per phi sector)
+    </TABLE>
+
+    <p><a name="wv"><b>TABLE wv variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>evnum</TD><TD>int</TD><TD>Event number</TD></TR>
+	<TR><TD>id</TD><TD>int2</TD><TD>Channel id number 9*12=108</TD></TR>
+	<TR><TD>chip</TD><TD>int2</TD><TD>Chip read out (0-3)</TD></TR>
+	<TR><TD>rcobit</TD><TD>int2</TD><TD>RCObit, 0 or 1</TD></TR>
+	<TR><TD>hbwrap</TD><TD>int2</TD><TD>Hit bus wrap flag, 0 or 1</TD></TR>
+	<TR><TD>hbstart</TD><TD>int2</TD><TD>Position of first hitbus bin before rotation (0-259)</TD></TR>
+	<TR><TD>hbend</TD><TD>int2</TD><TD>Position of last hitbus bin before rotation (0-259)</TD></TR>
+	<TR><TD>peds</TD><TD>int4</TD><TD>Timestamp of pedestals used (as recorded by flight computer or GSE)</TD></TR>
+	<TR><TD>raw</TD><TD>int2[]</TD><TD>Raw ADC data, full 16 bits (post decoding if necessary), 260 entries</TD></TR>
+	<TR><TD>cal</TD><TD>real[]</TD><TD>Calibrated and rotated data (mV), 260 entries</TD></TR>
+    </TABLE>
+
+    <p><a name="wv_ped"><b>TABLE wv_ped variables</b></a>
+    <TABLE BORDER=2>
+        <TR BGCOLOR="#99CCFF"> <TH>Name</TH> <TH>Type</TH> <TH>Comment</TH></TR>
+	<TR><TD>nbuf</TD><TD>int</TD><TD>Unique packet number. Highest bit; high=TDRSS, low=LOS</TD></TR>
+	<TR><TD>crc</TD><TD>int2</TD><TD>Checksum check</TD></TR>
+	<TR><TD>now</TD><TD>int</TD><TD>UNIX timestamp at GSE processing time</TD></TR>
+	<TR><TD>time</TD><TD>int</TD><TD>UNIX timestamp of data packet, also end of pedestal measuring period</TD></TR>
+	<TR><TD>start</TD><TD>int</TD><TD>UNIX timestamp of start of pedestal taking period</TD></TR>
+	<TR><TD>id</TD><TD>int2</TD><TD>Channel id number 9*12=108</TD></TR>
+	<TR><TD>chip</TD><TD>int2</TD><TD>Chip read out (0-3)</TD></TR>
+	<TR><TD>entries</TD><TD>int2</TD><TD>Number of samples taken to calculate pedestals</TD></TR>
+	<TR><TD>ped</TD><TD>real[]</TD><TD>Pedestal ADC values (divided by 2), 260 entries</TD></TR>
+	<TR><TD>rms</TD><TD>real[]</TD><TD>Pedestal ADC RMS values (divided by 2?), 260 entries</TD></TR>
+    </TABLE>
+
+    <hr>
+    <address>-- Ped <a href="mailto:predrag@phys.hawaii.edu">; he still answers</a></address>
+<!-- Created: Wed Sep 27 13:08:27 HST 2006 -->
+    <address>-- Shige <a href="mailto:shige@phys.hawaii.edu"></a></address>
+  </body>
+</html>

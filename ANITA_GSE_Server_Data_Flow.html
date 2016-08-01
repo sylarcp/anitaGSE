@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>ANITA GSE Server Data Flow</title>
+</head>
+<body>
+<h1>ANITA GSE SERVER INTERNAL DATA FLOW</h1>
+Predrag Miocinovic, last updated 10/02/2006<br>
+<br>
+This document outlines what happens to telemetry data once it reaches
+Anita <a
+ href="http://www.phys.hawaii.edu/%7Epredrag/post/anita/software/gse-setup.html">GSE
+server</a>. It is intended to be technical document to help with
+maintaining and modifying the server, not as a user documentation. Any
+files and utilities not explicitly defined as coming from an external
+package are to be assumed a part of <span
+ style="font-family: monospace;">anitagse</span> package.<br>
+<h3>Content<br>
+</h3>
+<ol>
+  <li><a href="#Server_Layout">Server layout</a><br>
+  </li>
+  <li><a href="#Receiving_and_redistributing_data">Receiving and
+redistributing data</a> <br>
+  </li>
+  <li><a href="#Queuing_incoming_files">Queuing incoming files</a></li>
+  <li><a href="#Unpacking_daemons">Unpacking daemons</a></li>
+  <li><a href="#Storing_to_files">Storing to files</a></li>
+  <li><a href="#Storing_to_database">Storing to database</a></li>
+  <li><a href="#Monitoring_server_performance">Monitoring server
+performance</a><br>
+  </li>
+</ol>
+<h2><a name="Server_Layout"></a>Server Layout</h2>
+Running of an ANITA GSE server is based on collection of shell scripts
+that controls how incoming data is stored and processed. These scripts
+are just wrappers for underlying processes, which themselves are either
+shell or Perl scripts, or C/C++ executables. All top level scripts are
+generated automatically during GSE server configuration (by <span
+ style="font-family: monospace;">gseconf</span> and <span
+ style="font-family: monospace;">gsecontrol setup</span>) and are
+controlled by <a href="http://cr.yp.to/daemontools.html">daemontools</a>
+utilities which ensure that they continually run and that their outputs
+are logged. The incoming telemetry is processed in three steps;<br>
+<ol>
+  <li>Incoming data is received and redistributed&nbsp; (if server
+configured to do so)</li>
+  <li>Data files are untarred and linked for processing</li>
+  <li>Each file is sent to unpacking daemon which parses telemetry
+packets and stores telemetry into database or files (or both)</li>
+</ol>
+These steps are addressed in the rest of this document. The performance
+of GSE server (i.e. is it keeping up with the data flow) can be
+monitored through with an HTML utility described in the last section. <br>
+<br>
+Performing GSE configuration (<span style="font-family: monospace;">gseconf</span>)
+and setup (<span style="font-family: monospace;">gsecontrol setup</span>)
+will produce subdirectories <span style="font-family: monospace;">services/</span>
+and <span style="font-family: monospace;">active_services/</span> in
+the top level anitagse directory, and <span
+ style="font-family: monospace;">svscan</span> process (part of
+daemontools) will be activated on <span style="font-family: monospace;">active_services</span>
+subdirectory. Subdirectory <span style="font-family: monospace;">services</span>
+contains additional subdirectories with top level scripts for each
+process that is a part of GSE server. When <span
+ style="font-family: monospace;">gsecontrol run n</span> is executed,
+appropriate links will be made in active_services subdirectory to
+elements of services subdirectory. On <span
+ style="font-family: monospace;">gsecontrol stop</span>, these links
+will be removed. On <span style="font-family: monospace;">gse terminate</span>,
+services subdirectory will be removed and svscan process stopped. On <span
+ style="font-family: monospace;">gsecontrol prime</span>, svscan will
+be activated.<br>
+<br>
+<span style="font-weight: bold;">Note</span>: In the <span
+ style="font-family: monospace;">anitagse</span> package there are
+actually two <span style="font-family: monospace;">gsecontrol</span>
+scripts. The first is <span style="font-family: monospace;">gsecontrol_single</span>
+which will be used on single CPU/core machine and the other is <span
+ style="font-family: monospace;">gsecontrol_smp</span> which will be
+used on multi CPU/core machine. The CPU determination is made by <span
+ style="font-family: monospace;">gseconf</span> script and appropriate <span
+ style="font-family: monospace;">gsecontrol</span> script is linked.
+The difference between the two is that smp version will run two
+parallel unpacking daemons for LOS telemetry, one for odd numbered
+files the other for even numbered files in order to increase telemetry
+processing throughput. <br>
+This is a kludge solution, since I was unable to find a way to
+configure PostgreSQL sever and Linux kernel in such way that more CPU
+resources are given to single unpacking process. Running only one
+unpacking process on multi core machine left more that 50% of CPU
+cycles idle. It was not disk I/O issues since running two processes in
+parallel raised CPU usage to +80%. I suspect its kernel resource
+allocation issue, but I wasn't able to resolve it. If someone has an
+idea, it would great.<br>
+<br>
+<h2><a name="Receiving_and_redistributing_data"></a>Receiving and
+redistributing data</h2>
+The GSE server listens for incoming connection on port 7740 (by
+default,
+although this is configurable in <span style="font-family: monospace;">gseconf</span>
+script) via <span style="font-family: monospace;">tcpserver</span>
+utility which is a part of <a href="http://cr.yp.to/ucspi-tcp.html">ucisp-tcp</a>
+package. Data received through this port is passed on to <span
+ style="font-family: monospace;">tcp/receive_data.pl</span> script
+which will;<br>
+<ol>
+  <li>Store a copy of incoming data stream (if instructed to
+redistribute data)</li>
+  <li>Untar data stream (it expects that incoming data was generated by
+    <span style="font-family: monospace;">'tar cf -'</span>); top
+directory specified in <span style="font-family: monospace;">gseconf</span><br>
+  </li>
+  <li>Pass the content list of the tarball to pipe <span
+ style="font-family: monospace;">tcp/filenames</span> (generated during
+    <span style="font-family: monospace;">gsecontrol run</span>)</li>
+  <li>Spawn a child process which will send buffered copy of data
+stream to another IP address on port 7740&nbsp; (if instructed to
+redistribute data)</li>
+  <li>Remove buffered copy of data stream once all children processes
+exit (on either success or failure, i.e. redistribution is not
+attempted again on failure) <br>
+  </li>
+</ol>
+This receiving data script has been proven to be very robust and was
+used since ANITA-lite campaign with minimal changes.<br>
+<h2><a name="Queuing_incoming_files"></a>Queuing incoming files</h2>
+Queuing incoming data files of processing is performed by two scripts <span
+ style="font-family: monospace;">tcp/process_data.pl</span>
+and <span style="font-family: monospace;">clearlink.pl</span>. The
+first one takes data file names from <span
+ style="font-family: monospace;">tcp/filename</span> pipe, makes unique<br>
+link name, and places that link to GSE link directory. The second
+script manages content of this link directory. If it finds a link older
+than some amount (5-10 minutes is optimal amount, configurable in
+gseconf), it moves it to subdirectory <span
+ style="font-family: monospace;">old/</span>. If it finds no links in
+the link directory and "resurrects" an older link from <span
+ style="font-family: monospace;">old/</span> subdirectory (if any
+exist) and places it in link directory. This way links in the link
+directory will never be too old, ensuring that fresh telemetry gets
+processed first and any older files get processed only if there is
+spare CPU capacity.&nbsp; Ideally, GSE server should always be able to
+handle incoming telemetry
+at LOS rates, but sometimes due to high GUI user load it could fall
+behind. It is very useful to monitor PostgreSQL server performance via <span
+ style="font-family: monospace;">'top -c -u postgres'</span> or via <a
+ href="#Monitoring_server_performance">HTML interface</a>.<br>
+<h2><a name="Unpacking_daemons"></a>Unpacking daemons</h2>
+Unpacking daemons are in charge of parsing telemetry data stream and
+extracting ANITA data from it. The daemon <span
+ style="font-family: monospace;">unpackd</span> is C++ process (source
+in <span style="font-family: monospace;">unpack/</span> subdirectory)
+which
+relies on <a href="http://cosray.wustl.edu/%7Emarty/lddl/doc-1.8a.html">lddl</a>
+library to extract science portion of telemetry. The science data is
+then scanned and each science data structure is reconstituted. At this
+point unpacker will do several things:<br>
+<ol>
+  <li>If instructed to <a href="#Storing_to_database">store to database</a>,
+it will prepare science data for insertion into database by generating
+an ascii SQL command and will transmit that command to PostgreSQL
+server via <a
+ href="http://www.postgresql.org/docs/7.4/static/libpq.html"><span
+ style="text-decoration: underline;">libpq</span></a> library call.</li>
+  <ul>
+    <li>On insertion failure, the failed ascii SQL command will be
+logged. The failures will most likely occur for data with telemetry
+errors since database guards itself from storing information which
+could have detrimental effect on it self-consistency. E.g: (this was
+actually observed) a waveform packet showed up which had chipId
+garbled, value was 191, and was thus rejected. However, a garbled SCA
+value would not be rejected. Very rarely, a valid SQL insertion command
+will fail, in which case it can be manually inserted into the database.
+I sometimes do following <span style="font-family: monospace;">'grep
+INSERT &lt;log file name&gt; | psql &lt;db name&gt;'</span>, which will
+try to pass all logged SQL insertion failures to database again. The
+output of <span style="font-family: monospace;">psql</span> will
+provide info on which commands are rejected again and why. <br>
+    </li>
+  </ul>
+  <li>If instructed to <a href="#Storing_to_files">store to files</a>,
+the data structure will be sent to file handling module which tries to
+replicate data storage onboard flight computer.</li>
+  <li>The data structure type and size will be logged. The summery of
+processing is found in files <span style="font-family: monospace;">'/tmp/anita_monitor_*'</span>
+where <span style="font-family: monospace;">'*'</span> uniquely
+identifies telemetry data stream:</li>
+  <ul>
+    <li><span style="font-family: monospace;">los</span> for LOS
+telemetry (on multi CPU machine, there will be <span
+ style="font-family: monospace;">los_odd</span> and <span
+ style="font-family: monospace;">los_even</span>, instead)</li>
+    <li><span style="font-family: monospace;">sip_hr</span> for high
+rate TDRSS telemetry <br>
+    </li>
+    <li><span style="font-family: monospace;">sip_lr</span> for
+combined low rate TDRSS and Iridium telemetry<br>
+    </li>
+  </ul>
+  <li>Several critical pieces of telemetry data are extracted and
+stored in a temporary files;</li>
+  <ul>
+    <li>GPS location; stored in<span style="font-family: monospace;">
+/tmp/anita_gpsloc.txt</span> in format <span
+ style="font-family: monospace;">UNIX_UTC TimeOfDay Latitude Longitude
+Altitude</span></li>
+    <li>GPS orientation; stored in <span
+ style="font-family: monospace;">/tmp/anita_gpsorient.txt</span> in
+format <span style="font-family: monospace;">UNIX_UTC Heading Pitch
+Roll</span></li>
+    <li>Critical HK values; stored in <span
+ style="font-family: monospace;">/tmp/anita_hkcrit.txt</span> in format
+      <span style="font-family: monospace;">UNIX_UTC Battery_Current
+PV_Voltage CPU_temp Radiator_Plate_Temp</span></li>
+    <li>Command echo; stored in <span style="font-family: monospace;">/tmp/anita_cmdecho.txt</span>
+in format <span style="font-family: monospace;">UNIX_UTC
+Good_Flag Command Bytes (first in hex, the rest in decimal)</span></li>
+  </ul>
+</ol>
+There will be one unpacking daemon running per telemetry encoding type
+(actually, on multi CPU machine, two daemons will handle LOS telemetry)
+since lddl engine needs unique format specifier. Note that version
+lddl-1.8b is required since data is passed to lddl through a pipe which
+sometimes has no data in it. Version 1.8a would close such pipe and
+exit, but 1.8b will wait for data to appear again without exiting. Each
+daemon monitors a pipe named <span style="font-family: monospace;">'/tmp/unpackd_fifo_*'</span>
+where <span style="font-family: monospace;">'*'</span> is
+corresponding telemetry format name; <span
+ style="font-family: monospace;">los </span>(<span
+ style="font-family: monospace;">los_odd</span> and <span
+ style="font-family: monospace;">los_even</span> on multi CPU machine),
+<span style="font-family: monospace;">sip_hr</span>, and <span
+ style="font-family: monospace;">sip_lr</span>.<br>
+<h2><a name="Storing_to_files"></a>Storing to files</h2>
+When outputting data to files, unpacking daemon's file handling module
+will place files in a directory structure resembling one used on the
+flight computer. The top directory is named in gseconf, and
+subdirectories will be:<br>
+<ul>
+  <li><span style="font-family: monospace;">event</span> - contains
+header and waveform files<br>
+  </li>
+  <ul>
+    <li>Headers are packed 100 to a file, with filename given by first
+event in the file<br>
+    </li>
+    <li>Waveforms are packed 81 to a file, one file per event. This is
+different than on the flight computer since there is no way to tell
+which events would be in a file if there is more than one. The format
+is always 81 consecutive structures of type <span
+ style="font-family: monospace;">RawWaveformPacket_t</span> or <span
+ style="font-family: monospace;">PedSubbedWaveformPacket_t</span>. <br>
+    </li>
+  </ul>
+  <li><span style="font-family: monospace;">house</span> - contains
+subdirectories cmd,&nbsp; gps,&nbsp; hk,&nbsp; monitor,&nbsp;
+surfhk,&nbsp; turfhk</li>
+  <ul>
+    <li><span style="font-family: monospace;">cmd</span> - contains
+command echoes, 1000 per file</li>
+    <li><span style="font-family: monospace;">gps</span> - contains
+subdirectories adu5 and g12</li>
+    <ul>
+      <li><span style="font-family: monospace;">adu5</span> - contains
+subdirectories pat, sat, and vtg</li>
+      <ul>
+        <li><span style="font-family: monospace;">pat</span> - contains
+adu5 pat structures, 1000 per file</li>
+        <li><span style="font-family: monospace;">sat</span> - contains
+adu5 sat structures, 1000 per file</li>
+        <li><span style="font-family: monospace;">vtg</span> - contains
+adu5 vtg structures, 1000 per file</li>
+      </ul>
+      <li><span style="font-family: monospace;">g12</span> - contains
+pos and sat subdirectories</li>
+      <ul>
+        <li><span style="font-family: monospace;">pos</span> - contains
+g12 pos structures, 1000 per file</li>
+        <li><span style="font-family: monospace;">sat</span> - contains
+g12 sat structures, 1000 per file</li>
+      </ul>
+    </ul>
+    <li><span style="font-family: monospace;">hk</span> - contains raw
+housekeeping structures, 1000 per file, and calibration housekeeping
+structures, 2 per file<br>
+      <span style="font-family: monospace;"></span></li>
+    <li><span style="font-family: monospace;">monitor</span> - contains
+monitor structures, 1000 per file</li>
+    <li><span style="font-family: monospace;">surfhk</span> - contains
+SURF housekeeping structures, 1000 per file</li>
+    <li><span style="font-family: monospace;">turfhk</span> - contains
+TURF rate structures, 1000 per file</li>
+  </ul>
+  <li><span style="font-family: monospace;">pedestal</span> - contains
+pedestal structures in format readable by AnitaViewer GUI</li>
+  <li><span style="font-family: monospace;">config</span> - contains
+configuration and log file dumps</li>
+</ul>
+In each directory that stores multiple structures per file, there is a
+special file <span style="font-family: monospace;">current</span>
+which names currently incomplete file and number of structures already
+in that file. This file is only written out when <span
+ style="font-family: monospace;">unpackd</span> exists. <br>
+<div style="margin-left: 40px;"><span style="font-weight: bold;">NB:</span>
+There might arise a problem with this scheme since there will be a lot
+of waveforms arriving and storing a lot of files in one directory
+causes some system strain. A scheme which would place waveforms in
+subdirectories should be devised.<br>
+</div>
+<br>
+<h2><a name="Storing_to_database"></a>Storing to database</h2>
+The database used to store ANITA telemetry is defined in file <span
+ style="font-family: monospace;">create_tables.sql</span>. The tables
+and their variables are listed <a
+ href="http://www.phys.hawaii.edu/%7Epredrag/post/anita/gse_programs/AnitaDatabaseLayout.html">here</a>.
+In addition to defining tables, this file creates table indicies,
+notifications, views, and triggers. Also, it defines trigger procedures
+which are used to calibrate housekeeping and waveform data. All other
+data, i.e. packets that don't require calibration, are just transcribed
+from C structure into database table representation with few additional
+fields, like checksum check and the time of processing. Housekeeping
+and waveform packets, in addition to raw values, also have their
+calibrated values stored in database tables. The calibration is
+performed at the point of insertion to the database. Sometimes
+waveforms can not be calibrated if their header has not arrived, so
+they will be calibrated once that header shows up. <br>
+<h2><a name="Monitoring_server_performance"></a>Monitoring server
+performance</h2>
+There are three main things that have to be monitored on a GSE server,
+and all three are available through HTML interface in <span
+ style="font-family: monospace;">html/</span> subdirectory or just by
+invoking shell commands. They are;<br>
+<ul>
+  <li>Number of links in the link directory; ideally there should be
+just links for files currently being processed.&nbsp; If links are
+accumulating, the server must be doing something that prevents it from
+processing telemetry with sufficient resources.</li>
+  <li>Monitor files in <span style="font-family: monospace;">/tmp</span>
+directory; key statistics are current and average rates. The average
+rate should be at average rate of telemetry, while current rate should
+be higher than this indicating that once data is present is being
+processed with room to spare.</li>
+  <li>CPU usage; in <span style="font-family: monospace;">top</span>
+one should monitor amount of CPU time used by <span
+ style="font-family: monospace;">postmaster</span> processes which are
+part of PostgreSQL server. If there is spare CPU capacity, but links
+are accumulating, there is a problem somewhere. In such case, keep an
+eye on incoming GUI connections to the database. They can be identified
+if you run <span style="font-family: monospace;">'top -c -u postgres'</span>
+and widen shell window with top to see full process command line.
+Incoming connection will be marked with IP address and word <span
+ style="font-family: monospace;">gui</span>. <br>
+  </li>
+</ul>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<br>
+</body>
+</html>

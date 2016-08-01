@@ -1,0 +1,122 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.57)
+AC_INIT(anitaGSE.h)
+version=`cat VERSION`
+AM_INIT_AUTOMAKE(anitagse,${version}, predrag@phys.hawaii.edu) 
+
+AC_CONFIG_SRCDIR([unpack/unpackd.cc])
+# AC_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_RANLIB
+AM_PROG_LIBTOOL
+
+dnl Debugging support                                                           
+AC_ARG_ENABLE(debug,
+     [  --enable-debug          Turn on debugging],
+     [case "${enableval}" in
+       yes)
+        debug=true
+        CPPFLAGS="$CPPFLAGS -Wall -DDEBUG -pg -fno-inline -g -O0"
+        ;;
+       no)
+        debug=false
+        ;;
+       *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+     esac],[debug=false])
+
+
+# Checks for header files.
+AC_CHECK_HEADER(lddl.h,HAVE_LDDL=1,HAVE_LDDL=0)
+if test $HAVE_LDDL = 0; then
+  echo "************************************************************"
+  echo "* Unable to find lddl header files. Can't build software.  *"
+  echo "* You can set the 'CPPFLAGS' environment  variable to      *"
+  echo "* '-IYOUR_LDDL_INCLUDE_PATH' to enable configure to        *"
+  echo "* find the headers.                                        *"
+  echo "************************************************************"
+fi
+AC_CHECK_HEADER(libpq-fe.h,HAVE_PQ=1,HAVE_PQ=0)
+if test $HAVE_PQ = 0; then
+  echo "*****************************************************************"
+  echo "* Unable to find PostgreSQL header files. Can't build software. *"
+  echo "* You can set the 'CPPFLAGS' environment  variable to           *"
+  echo "* '-IYOUR_PSQL_INCLUDE_PATH' to enable configure to             *"
+  echo "* find the headers.                                             *"
+  echo "*****************************************************************"
+fi
+
+AC_CHECK_HEADER(includes/anitaFlight.h,HAVE_ANITA=1,HAVE_ANITA=0)
+if test $HAVE_ANITA = 0; then
+  echo "*****************************************************************"
+  echo "* Unable to find anitaFlight header files. Can't build software.*"
+  echo "* You can set the 'CPPFLAGS' environment  variable to           *"
+  echo "* '-IYOUR_FLIGHTSOFT_INCLUDE_PATH' to enable configure to       *"
+  echo "* find the headers.                                             *"
+  echo "*****************************************************************"
+fi
+
+# Checks for libraries.
+if test "$HAVE_LDDL"; then
+  AC_CHECK_LIB(lddl,main,[HAVE_LDDL_LIB=1], [
+        HAVE_LDDL_LIB=0
+        echo "************************************************************"
+        echo "* Unable to find lddl library. Can't build gse software    *"
+        echo "* You can set the 'LDFLAGS' environment  variable to       *"
+        echo "* '-LYOUR_LIBRARY_PATH' to enable configure to find the    *"
+        echo "* library.                                                 *"
+        echo "************************************************************"
+])
+fi
+if test "$HAVE_PQ"; then 
+  AC_CHECK_LIB(pq,PQdb,[HAVE_PQ_LIB=1], [
+        HAVE_PQ_LIB=0
+        echo "***************************************************************"
+        echo "* Unable to find PostgreSQL library. Can't build gse software *"
+        echo "* You can set the 'LDFLAGS' environment  variable to          *"
+        echo "* '-LYOUR_LIBRARY_PATH' to enable configure to find the       *"
+        echo "* library.                                                    *"
+        echo "***************************************************************"
+])
+fi
+if test "$HAVE_ANITA"; then 
+  AC_CHECK_FILE($FLIGHTSOFT_LIBDIR/libCompress.a,[HAVE_COMPRESS_LIB=1], [
+        HAVE_COMPRESS_LIB=0
+        echo "***************************************************************"
+        echo "* Unable to find Anita flightSoft libCompress.a library.      *"
+	echo "* Compile flightSoft/common subdirectory and set environment  *"
+	echo "* variable 'FLIGHTSOFT_LIBDIR' to point to absolute path of   *"
+	echo "* flightSoft/lib directory.                                   *"
+	echo "***************************************************************"
+  ])
+  AC_CHECK_FILE($FLIGHTSOFT_LIBDIR/libPedestal.a,[HAVE_PEDESTAL_LIB=1], [
+        HAVE_PEDESTAL_LIB=0
+        echo "***************************************************************"
+        echo "* Unable to find Anita flightSoft libPedestal.a library.      *"
+	echo "* Compile flightSoft/common subdirectory and set environment  *"
+	echo "* variable 'FLIGHTSOFT_LIBDIR' to point to absolute path of   *"
+	echo "* flightSoft/lib directory.                                   *"
+	echo "***************************************************************"
+  ])
+  AC_CHECK_FILE($FLIGHTSOFT_LIBDIR/libUtil.a,[HAVE_UTIL_LIB=1], [
+        HAVE_UTIL_LIB=0
+        echo "***************************************************************"
+        echo "* Unable to find Anita flightSoft libUtil.a library.          *"
+	echo "* Compile flightSoft/common subdirectory and set environment  *"
+	echo "* variable 'FLIGHTSOFT_LIBDIR' to point to absolute path of   *"
+	echo "* flightSoft/lib directory.                                   *"
+	echo "***************************************************************"
+  ])
+fi
+#AC_CHECK_LIB(pthread,pthread_create)
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+AC_CONFIG_FILES([Makefile lib/Makefile unpack/Makefile html/Makefile tcp/Makefile wvreader/Makefile])
+AC_OUTPUT
