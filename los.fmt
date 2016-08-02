@@ -14,7 +14,7 @@ group header
        S = 0xd0cc
        S = 0xae00 mask 0xff00 : print "ID_HDR %04x\t"
        L -> bufcnt : print "buf %lu\t" # buffer count
-       L = 0x0000
+       #L = 0x0000
        S -> nbytes : print "nb %u\t"   # no. science bytes
 group_end
 
