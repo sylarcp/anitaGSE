@@ -54,7 +54,7 @@ DAEMONTOOLS_DIR=/usr/local/bin
 # "'xxx.xxx.xxx.xxx','yyy.yyy.yyy.yyy',...."
 #FANOUT_IPS="'128.171.30.36','128.171.30.67'"
 #FANOUT_IPS="'128.171.30.36','128.171.30.67','128.200.48.50'"
-FANOUT_IPS="'128.175.112.80','192.168.20.222'"
+#FANOUT_IPS="'128.175.112.80','192.168.20.222'"
 # FANOUT_IPS=
 
 # Specify port to use to receive (and send data on). Shouldn't be changed

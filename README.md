@@ -4,7 +4,7 @@ Install:
 vi unpack/utilityFunctions.h # add #include <cstring>
 declare -x CPPFLAGS=-I$ANITA_FLIGHT_SOFT_DIR/common
 declare -x FLIGHTSOFT_LIBDIR=$ANITA_FLIGHT_SOFT_DIR/lib
-cd ~/anitagse
+cd ~/anitaGSE
 ./configure
 cd wvreader
 vi Makefile
@@ -15,6 +15,9 @@ make
 
 Run:
 ```
+change the tcp/rules,
+vi gseconf
+change the fanout IP depends on your need.
 ./gseconf
 ./gsecontrol run 5
 #terminate
