@@ -15,6 +15,9 @@ make
 
 Run:
 ```
+change the tcp/rules,
+vi gseconf
+change the fanout IP depends on your need.
 ./gseconf
 ./gsecontrol run 5
 #terminate
