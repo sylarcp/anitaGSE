@@ -670,6 +670,49 @@ CREATE TABLE turf (
 ) WITHOUT OIDS;
 CREATE INDEX turf_now_index ON turf (now);
 
+ -- RTLSDR pow spectrum table
+CREATE TABLE rtlsdr (
+	nbuf int PRIMARY KEY,
+	crc int2,   -- See comment on top
+	now int,   -- time of processing
+	nfreq int,
+	startfreq int,
+	freqstep int,
+	unixtimestart int,
+	scantime int2,
+	gain int2,
+	specturm char[],
+	rtlnum char,
+	UNIQUE (unixtimestart)
+) WITHOUT OIDS;
+CREATE INDEX rtlsdr_now_index ON rtlsdr (now);
+ -- TUFF status table
+CREATE TABLE tuff_status (
+	nbuf int PRIMARY KEY,
+	crc int2,   -- See comment on top
+	now int,   -- time of processing
+	time int, 
+	notchsettime int,
+	startsectors char[],
+	endsectors char[],
+	temperatures char[],
+	UNIQUE (time)
+) WITHOUT OIDS;
+CREATE INDEX tuff_status_now_index ON tuff_status (now);
+ -- TUFF cmd table
+CREATE TABLE tuff_cmd (
+	nbuf int PRIMARY KEY,
+	crc int2,   -- See comment on top
+	now int,   -- time of processing
+	requestedtime int,
+	enactedtime int,
+	cmd int2,
+	irfcm char,
+	tuffstack char,
+	UNIQUE (requestedtime)
+) WITHOUT OIDS;
+CREATE INDEX tuff_cmd_now_index ON tuff_cmd (now);
+
 -- Disk space and queue monitor table
 CREATE TABLE mon (
 	nbuf int PRIMARY KEY,
@@ -1381,6 +1424,9 @@ GRANT SELECT ON hk_cal TO gui;
 GRANT SELECT ON sshk_cal TO gui;
 GRANT SELECT ON hk_surf TO gui;
 GRANT SELECT ON turf TO gui;
+GRANT SELECT ON rtlsdr TO gui;
+GRANT SELECT ON tuff_status TO gui;
+GRANT SELECT ON tuff_cmd TO gui;
 GRANT SELECT ON mon TO gui;
 GRANT SELECT ON adu5_pat TO gui;
 GRANT SELECT ON adu5_sat TO gui;

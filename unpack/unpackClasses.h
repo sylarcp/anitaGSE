@@ -207,6 +207,9 @@ protected:
   void parsePsWv();
   void parseSurfHk();
   void parseTurf();
+  void parseRtlsdr();
+  void parseTuffStatus();
+  void parseTuffCmd();
   void parseAdu5Pat(unsigned int gpstype);
   void parseAdu5Vtg(unsigned int gpstype);
   void parseAdu5Sat(unsigned int gpstype);

@@ -52,9 +52,9 @@ pkgincludedir = $(includedir)/anitagse
 
 top_builddir = .
 
-ACLOCAL = /home/anita/anitagse/missing aclocal-1.4
+ACLOCAL = /home/anita/anitaGse/missing aclocal-1.4
 AUTOCONF = autoconf
-AUTOMAKE = /home/anita/anitagse/missing automake-1.4
+AUTOMAKE = /home/anita/anitaGse/missing automake-1.4
 AUTOHEADER = autoheader
 
 INSTALL = /usr/bin/install -c
@@ -79,7 +79,7 @@ ECHO = echo
 EXEEXT = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
-MAKEINFO = /home/anita/anitagse/missing makeinfo
+MAKEINFO = /home/anita/anitaGse/missing makeinfo
 OBJDUMP = @OBJDUMP@
 OBJEXT = o
 PACKAGE = anitagse

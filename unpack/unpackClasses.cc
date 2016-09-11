@@ -473,6 +473,9 @@ void Packet::parsePacket(DataType_t type,bool crcWrapper, int crcInternal){
     case PACKET_LAB_PED: parsePed(); break;
     case PACKET_SURF_HK: parseSurfHk(); break;
     case PACKET_TURF_RATE: parseTurf(); break;
+    case PACKET_RTLSDR_POW_SPEC: parseRtlsdr(); break;
+    case PACKET_TUFF_STATUS: parseTuffStatus(); break;
+    case PACKET_TUFF_RAW_CMD: parseTuffCmd(); break;
     case PACKET_GPS_ADU5_PAT: parseAdu5Pat((*(unsigned int*)pckStruct_p)&0xffff0000); break;
     case PACKET_GPS_ADU5_VTG: parseAdu5Vtg((*(unsigned int*)pckStruct_p)&0xffff0000); break;
     case PACKET_GPS_ADU5_SAT: parseAdu5Sat((*(unsigned int*)pckStruct_p)&0xffff0000); break;
@@ -1196,6 +1199,91 @@ void Packet::parseTurf(){
 
   //  printf(" %s\n", fields) ;
 
+  return;
+}
+
+// RTLSDR POW SPECTRUM parser
+void Packet::parseRtlsdr(){
+  table="rtlsdr";
+  //  printf(" rtlsdr packet.\n") ;
+  if(nData!=sizeof(RtlSdrPowerSpectraStruct_t)) throw Error::ParseError();
+  RtlSdrPowerSpectraStruct_t *rtlsdr_p=(RtlSdrPowerSpectraStruct_t*)pckStruct_p;
+  if((rtlsdr_p->gHdr.code&0xffff)!=PACKET_RTLSDR_POW_SPEC) throw Error::ParseError();
+
+  // Store values
+  fields.reserve(8);
+  fields.push_back(Word(rtlsdr_p->nFreq,"nfreq"));
+  fields.push_back(Word(rtlsdr_p->startFreq,"startfreq"));
+  fields.push_back(Word(rtlsdr_p->freqStep,"freqstep"));
+  fields.push_back(Word(rtlsdr_p->unixTimeStart,"unixtimestart"));
+  fields.push_back(Word(rtlsdr_p->scanTime,"scantime"));
+  fields.push_back(Word(rtlsdr_p->gain,"gain"));
+  fields.push_back(Word(rtlsdr_p->rtlNum,"rtlnum"));
+  ostringstream spectrum;
+  spectrum << "{";
+  for(int j=0;j<RTLSDR_MAX_SPECTRUM_BINS;++j){
+    spectrum << (char)(rtlsdr_p->spectrum[j]);
+    if(j<RTLSDR_MAX_SPECTRUM_BINS-1) spectrum << ",";
+    else spectrum << "}";
+  }
+  fields.push_back(Word(spectrum.str().c_str(),"spectrum"));
+  return;
+}
+
+// TUFF STATUS parser
+void Packet::parseTuffStatus(){
+  table="tuffstatus";
+  //  printf(" tuff status packet.\n") ;
+  if(nData!=sizeof(TuffNotchStatus_t)) throw Error::ParseError();
+  TuffNotchStatus_t *tuffstatus_p=(TuffNotchStatus_t*)pckStruct_p;
+  if((tuffstatus_p->gHdr.code&0xffff)!=PACKET_TUFF_STATUS) throw Error::ParseError();
+
+  // Store values
+  fields.reserve(5);
+  fields.push_back(Word(tuffstatus_p->unixTime,"time"));
+  fields.push_back(Word(tuffstatus_p->notchSetTime,"notchsettime"));
+  ostringstream startsectors;
+  startsectors << "{";
+  for(int j=0;j<NUM_TUFF_NOTCHES;++j){
+    startsectors << (char)(tuffstatus_p->startSectors[j]);
+    if(j<NUM_TUFF_NOTCHES-1) startsectors << ",";
+    else startsectors << "}";
+  }
+  fields.push_back(Word(startsectors.str().c_str(),"startsectors"));
+  ostringstream endsectors;
+  endsectors << "{";
+  for(int j=0;j<NUM_TUFF_NOTCHES;++j){
+    endsectors << (char)(tuffstatus_p->endSectors[j]);
+    if(j<NUM_TUFF_NOTCHES-1) endsectors << ",";
+    else endsectors << "}";
+  }
+  fields.push_back(Word(endsectors.str().c_str(),"endsectors"));
+  ostringstream temperatures;
+  temperatures << "{";
+  for(int j=0;j<NUM_RFCM;++j){
+    temperatures << (char)(tuffstatus_p->temperatures[j]);
+    if(j<NUM_RFCM-1) temperatures << ",";
+    else temperatures << "}";
+  }
+  fields.push_back(Word(temperatures.str().c_str(),"temperatures"));
+  return;
+}
+
+// TUFF RAW CMD parser
+void Packet::parseTuffCmd(){
+  table="tuffcmd";
+  //  printf(" tuff cmd packet.\n") ;
+  if(nData!=sizeof(TuffRawCmd_t)) throw Error::ParseError();
+  TuffRawCmd_t *tuffcmd_p=(TuffRawCmd_t*)pckStruct_p;
+  if((tuffcmd_p->gHdr.code&0xffff)!=PACKET_TUFF_RAW_CMD) throw Error::ParseError();
+
+  // Store values
+  fields.reserve(5);
+  fields.push_back(Word(tuffcmd_p->requestedTime,"requestedtime"));
+  fields.push_back(Word(tuffcmd_p->enactedTime,"enactedtime"));
+  fields.push_back(Word(tuffcmd_p->cmd,"short"));
+  fields.push_back(Word(tuffcmd_p->irfcm,"irfcm"));
+  fields.push_back(Word(tuffcmd_p->tuffStack,"tuffstack"));
   return;
 }
 
