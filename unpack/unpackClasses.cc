@@ -982,8 +982,8 @@ void Packet::parseHd(){
   fields.push_back(Word(hd_p->calibStatus,"calib"));
   fields.push_back(Word(hd_p->priority,"priority"));
   fields.push_back(Word(hd_p->turfUpperWord,"turfword"));
-  fields.push_back(Word(hd_p->l2TrigMask,"l2mask"));//peng
-  fields.push_back(Word(hd_p->l2TrigMaskH,"l2maskh"));//peng
+  fields.push_back(Word(hd_p->l2TrigMask,"l1mask"));// intentionally remain the l1mask, to compatiable with anita3 , peng
+  fields.push_back(Word(hd_p->l2TrigMaskH,"l1maskh"));//peng
   fields.push_back(Word(hd_p->phiTrigMask,"phimask"));
   fields.push_back(Word(hd_p->phiTrigMaskH,"phimaskh"));//peng
   fields.push_back(Word(hd_p->peakThetaBin,"peakthetabin"));

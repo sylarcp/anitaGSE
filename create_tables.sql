@@ -979,8 +979,8 @@ CREATE TABLE hd (
 	calib int, -- Calibration status 
 	priority int2,  -- Event priority 
 	turfword int2, -- Turf upper word
-	l2mask int, -- l2 trigger mask--peng
-	l2maskh int, -- l2 trigger maskH--peng
+	l1mask int, -- should be l2 trigger mask, here remain name l1mask to make it compatiable with anita3 database--peng
+	l1maskh int, -- l1 trigger maskH--peng
 	phimask int, -- phi trigger mask
 	phimaskh int, -- phi trigger mask--peng
         peakthetabin int2, -- 8-bit peak theta bin from Prioritizer
