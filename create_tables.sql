@@ -658,14 +658,15 @@ CREATE TABLE turf (
 	now int,   -- time of processing
 	time int, 
 	deadtime int,
-        l1trigmask int,	--l1TrigMask
-	l1trigmaskh int,--l1TrigMaskH
+    l2trigmask int,	--l2TrigMask
+	-- l1trigmaskh int,--l1TrigMaskH
 	phitrigmask int,
-	phitrigmaskh int,
-	l1 int[],   -- Level 1 rate (16 sectors)
-	l1h int[],   -- Level 1 rate (16 sectors)
+	-- phitrigmaskh int,
+	l2 int[],   -- Level 2 rate (16 sectors)
+	-- l1h int[],   -- Level 1 rate (16 sectors)
 	l3 int2[],   -- Level 3 rate (16 sectors)
-	l3h int2[],   -- Level 3 rate (16 sectors)
+    l3gated int2[],   -- Level 3 rate gated (16 sectors)
+	-- l3h int2[],   -- Level 3 rate (16 sectors)
 	UNIQUE (time)
 ) WITHOUT OIDS;
 CREATE INDEX turf_now_index ON turf (now);
@@ -978,8 +979,8 @@ CREATE TABLE hd (
 	calib int, -- Calibration status 
 	priority int2,  -- Event priority 
 	turfword int2, -- Turf upper word
-	l1mask int, -- l1 trigger mask--peng
-	l1maskh int, -- l1 trigger maskH--peng
+	l2mask int, -- l2 trigger mask--peng
+	l2maskh int, -- l2 trigger maskH--peng
 	phimask int, -- phi trigger mask
 	phimaskh int, -- phi trigger mask--peng
         peakthetabin int2, -- 8-bit peak theta bin from Prioritizer

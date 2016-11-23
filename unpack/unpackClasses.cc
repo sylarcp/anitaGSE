@@ -982,8 +982,8 @@ void Packet::parseHd(){
   fields.push_back(Word(hd_p->calibStatus,"calib"));
   fields.push_back(Word(hd_p->priority,"priority"));
   fields.push_back(Word(hd_p->turfUpperWord,"turfword"));
-  fields.push_back(Word(hd_p->l1TrigMask,"l1mask"));//peng
-  fields.push_back(Word(hd_p->l1TrigMaskH,"l1maskh"));//peng
+  fields.push_back(Word(hd_p->l1TrigMask,"l2mask"));//peng
+  fields.push_back(Word(hd_p->l1TrigMaskH,"l2maskh"));//peng
   fields.push_back(Word(hd_p->phiTrigMask,"phimask"));
   fields.push_back(Word(hd_p->phiTrigMaskH,"phimaskh"));//peng
   fields.push_back(Word(hd_p->peakThetaBin,"peakthetabin"));
@@ -1154,48 +1154,57 @@ void Packet::parseTurf(){
   if((turf_p->gHdr.code&0xffff)!=PACKET_TURF_RATE) throw Error::ParseError();
 
   // Store values
-  fields.reserve(10);
+  fields.reserve(7);
   fields.push_back(Word(turf_p->unixTime,"time"));
   fields.push_back(Word(turf_p->deadTime,"deadtime"));
   fields.push_back(Word(turf_p->phiTrigMask,"phitrigmask"));
-  fields.push_back(Word(turf_p->phiTrigMaskH,"phitrigmaskh"));//peng
-  fields.push_back(Word(turf_p->l1TrigMask,"l1trigmask"));//peng
-  fields.push_back(Word(turf_p->l1TrigMaskH,"l1trigmaskh"));//peng
-  ostringstream l1;
-  l1 << "{";
+  // fields.push_back(Word(turf_p->phiTrigMaskH,"phitrigmaskh"));//peng, removed 11/22/2016
+  fields.push_back(Word(turf_p->l2TrigMask,"l2trigmask"));//peng
+  // fields.push_back(Word(turf_p->l1TrigMaskH,"l1trigmaskh"));//peng, removed 11/22/2016
+  ostringstream l2;
+  l2 << "{";
   for(int j=0;j<PHI_SECTORS;++j){
-    l1 << (unsigned short)(turf_p->l1Rates[j][0]);
-    if(j<PHI_SECTORS-1) l1 << ",";
-    else l1 << "}";
+    l2 << (unsigned short)(turf_p->l2Rates[j]);
+    if(j<PHI_SECTORS-1) l2 << ",";
+    else l2 << "}";
   }
-  fields.push_back(Word(l1.str().c_str(),"l1"));
-//peng
-  ostringstream l1H;
-  l1H << "{";
-  for(int j=0;j<PHI_SECTORS;++j){
-    l1H << (unsigned short)(turf_p->l1Rates[j][1]);
-    if(j<PHI_SECTORS-1) l1H << ",";
-    else l1H << "}";
-  }
-  fields.push_back(Word(l1H.str().c_str(),"l1h"));
+  fields.push_back(Word(l2.str().c_str(),"l2"));
+// //peng
+//   ostringstream l1H;
+//   l1H << "{";
+//   for(int j=0;j<PHI_SECTORS;++j){
+//     l1H << (unsigned short)(turf_p->l1Rates[j][1]);
+//     if(j<PHI_SECTORS-1) l1H << ",";
+//     else l1H << "}";
+//   }
+//   fields.push_back(Word(l1H.str().c_str(),"l1h"));
 
   ostringstream l3;
   l3 << "{";
   for(int j=0;j<PHI_SECTORS;++j){
-    l3 << (unsigned short)(turf_p->l3Rates[j][0]);
+    l3 << (char)(turf_p->l3Rates[j]);
     if(j<PHI_SECTORS-1) l3 << ",";
     else l3 << "}";
   }
   fields.push_back(Word(l3.str().c_str(),"l3"));
-//peng
-  ostringstream l3H;
-  l3H << "{";
+// //peng
+//   ostringstream l3H;
+//   l3H << "{";
+//   for(int j=0;j<PHI_SECTORS;++j){
+//     l3H << (unsigned short)(turf_p->l3Rates[j][1]);
+//     if(j<PHI_SECTORS-1) l3H << ",";
+//     else l3H << "}";
+//   }
+//   fields.push_back(Word(l3H.str().c_str(),"l3h"));
+
+  ostringstream l3gated;
+  l3gated << "{";
   for(int j=0;j<PHI_SECTORS;++j){
-    l3H << (unsigned short)(turf_p->l3Rates[j][1]);
-    if(j<PHI_SECTORS-1) l3H << ",";
-    else l3H << "}";
+    l3gated << (char)(turf_p->l3RatesGated[j]);
+    if(j<PHI_SECTORS-1) l3gated << ",";
+    else l3gated << "}";
   }
-  fields.push_back(Word(l3H.str().c_str(),"l3h"));
+  fields.push_back(Word(l3gated.str().c_str(),"l3gated"));
 
   //  printf(" %s\n", fields) ;
 
