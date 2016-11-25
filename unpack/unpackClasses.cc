@@ -1182,7 +1182,7 @@ void Packet::parseTurf(){
   ostringstream l3;
   l3 << "{";
   for(int j=0;j<PHI_SECTORS;++j){
-    l3 << (char)(turf_p->l3Rates[j]);
+    l3 << (unsigned short)(turf_p->l3Rates[j]);
     if(j<PHI_SECTORS-1) l3 << ",";
     else l3 << "}";
   }
@@ -1200,7 +1200,7 @@ void Packet::parseTurf(){
   ostringstream l3gated;
   l3gated << "{";
   for(int j=0;j<PHI_SECTORS;++j){
-    l3gated << (char)(turf_p->l3RatesGated[j]);
+    l3gated << (unsigned short)(turf_p->l3RatesGated[j]);
     if(j<PHI_SECTORS-1) l3gated << ",";
     else l3gated << "}";
   }
