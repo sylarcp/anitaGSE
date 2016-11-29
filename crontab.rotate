@@ -8,5 +8,4 @@ DAEMONTOOLS_DIR=/usr/local/bin
 # 0 2,8,14,20 * * *
 
 #EST,  0 is minute, 1,7,13,19 is hour at current time zone when we rotate GSE.  * * * is for any Date, month, year.
-0 1,7,13,19 * * *
-cd /home/anita/anitaGSE ; ./gsecontrol rotate
+0 1,7,13,19 * * * cd /home/anita/anitaGSE ; ./gsecontrol rotate
