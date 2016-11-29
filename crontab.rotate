@@ -1,0 +1,12 @@
+# crontab for anitaGSE
+#
+SHELL=/bin/bash
+PATH=/bin:/usr/bin:/usr/local/bin
+DAEMONTOOLS_DIR=/usr/local/bin
+#
+# run gsecontrol rotate */6 in UT (this is for HST)
+# 0 2,8,14,20 * * *
+
+#EST,  0 is minute, 1,7,13,19 is hour at current time zone when we rotate GSE.  * * * is for any Date, month, year.
+0 1,7,13,19 * * *
+cd /home/anita/anitaGSE ; ./gsecontrol rotate
